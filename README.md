@@ -28,16 +28,16 @@ La numeración identifica tareas; el orden de ejecución depende de la columna d
 | D8 | David Lopez | Contar operaciones y analizar el PDA | D5–D7 | Hecho (pendiente revisión de Carlos) |
 | D9 | David Lopez | Implementar la consola y exportación de resultados | D1; D6 y C3 para completar | Hecho (pendiente revisión de Carlos) |
 | D10 | David Lopez | Preparar el repositorio y verificar la entrega | D1 para preparar; C6–C10 para cerrar | Preparado (faltan repo privado, accesos y enlaces) |
-| C1 | Carlos Lopez | Diseñar CYK y sus estructuras | D1, D2 | Pendiente |
-| C2 | Carlos Lopez | Implementar la tabla y decisión CYK | C1 | Pendiente |
-| C3 | Carlos Lopez | Registrar la tabla y reconstruir una derivación | C2 | Pendiente |
-| C4 | Carlos Lopez | Probar CYK y sus derivaciones | C2, C3 | Pendiente |
-| C5 | Carlos Lopez | Contar operaciones y analizar CYK | C2–C4 | Pendiente |
-| C6 | Carlos Lopez | Integrar, comparar respuestas y probar la consola | D7, D9, C4 | Pendiente |
-| C7 | Carlos Lopez | Generar experimentos de operaciones reproducibles | D8, C5, C6 | Pendiente |
-| C8 | Carlos Lopez | Redactar la comparación de desempeño | D8, C5, C7 | Pendiente |
-| C9 | Carlos Lopez | Integrar y generar el informe PDF | D4, D8, C5–C8 | Pendiente |
-| C10 | Carlos Lopez | Preparar, grabar y subir el video | C6, C9 y coordinación con David | Pendiente |
+| C1 | Carlos Lopez | Diseñar CYK y sus estructuras | D1, D2 | Hecho (pendiente revisión de David) |
+| C2 | Carlos Lopez | Implementar la tabla y decisión CYK | C1 | Hecho (pendiente revisión de David) |
+| C3 | Carlos Lopez | Registrar la tabla y reconstruir una derivación | C2 | Hecho (pendiente revisión de David) |
+| C4 | Carlos Lopez | Probar CYK y sus derivaciones | C2, C3 | Hecho (pendiente revisión de David) |
+| C5 | Carlos Lopez | Contar operaciones y analizar CYK | C2–C4 | Hecho (pendiente revisión de David) |
+| C6 | Carlos Lopez | Integrar, comparar respuestas y probar la consola | D7, D9, C4 | Hecho (pendiente revisión de David) |
+| C7 | Carlos Lopez | Generar experimentos de operaciones reproducibles | D8, C5, C6 | Hecho (pendiente revisión de David) |
+| C8 | Carlos Lopez | Redactar la comparación de desempeño | D8, C5, C7 | Borrador en `docs/informe.md` §8 (pendiente revisión de David) |
+| C9 | Carlos Lopez | Integrar y generar el informe PDF | D4, D8, C5–C8 | Borrador `docs/informe.md` (faltan carnés, enlaces y PDF) |
+| C10 | Carlos Lopez | Preparar, grabar y subir el video | C6, C9 y coordinación con David | Guion borrador `docs/guion_video.md` (falta grabar y subir) |
 
 ## Forma de trabajo y delegación a agentes
 
@@ -333,11 +333,11 @@ Este README distribuye todo el trabajo; no declara completada ninguna implementa
 
 ## Uso
 
-Actualización de implementación D1–D9: el plan anterior se conserva como referencia. El PDA y la
-consola están implementados; CYK y la revisión conjunta siguen pendientes de Carlos. Los contratos
-están en [docs/acuerdos.md](docs/acuerdos.md) y la definición, evidencia, fuentes y análisis del PDA
-en [docs/pda.md](docs/pda.md). Los estados D* indican el alcance local del brief, pendiente de revisión;
-la integración con una implementación real de CYK corresponde a C6.
+Actualización de implementación D1–D9 y C1–C7: el plan anterior se conserva como referencia. PDA,
+CYK y consola están implementados e integrados; la revisión cruzada entre ambos sigue pendiente. Los
+contratos están en [docs/acuerdos.md](docs/acuerdos.md); definición, evidencia y análisis del PDA en
+[docs/pda.md](docs/pda.md); diseño, evidencia y análisis de CYK en [docs/cyk.md](docs/cyk.md); el
+borrador del informe con la comparación en [docs/informe.md](docs/informe.md).
 
 Requiere Python >= 3.10, solo biblioteca estándar. No hay paquetes que instalar. Desde la raíz:
 
@@ -347,7 +347,9 @@ python main.py "he cooks" --metodo pda --traza
 python main.py "he eats cake" --traza --json salidas/rechazo.json
 python main.py "he cooks" --metodo ambos --traza
 python main.py "he cooks" --metodo pda --limite 1
+python main.py "she drinks a beer" --metodo cyk --traza
 python scripts/conteos_pda.py
+python scripts/benchmark.py
 python main.py --help
 ```
 
@@ -357,15 +359,18 @@ se rechazan, identificando cuáles quedan fuera del alfabeto. Vacía o solo espa
 `--limite N` exige un entero positivo y limita las expansiones del PDA, produciendo inconclusión
 si quedan configuraciones sin examinar. Sin límite, el PDA de G termina gracias a la poda segura.
 
-`--metodo` admite `pda`, `cyk`, `ambos` (predeterminado). Hasta que Carlos agregue `recognizer/cyk.py`,
-`ambos` ejecuta PDA y muestra «CYK no disponible todavía (tarea C2 de Carlos)»; `cyk` exclusivo
-devuelve código 2. `--traza` muestra descripciones instantáneas del PDA o la tabla CYK cuando exista.
+`--metodo` admite `pda`, `cyk`, `ambos` (predeterminado). Si faltara `recognizer/cyk.py`, `ambos`
+ejecuta PDA y avisa, y `cyk` exclusivo devuelve código 2. `--traza` muestra las descripciones
+instantáneas del PDA y la tabla CYK (todas las celdas, incluidas las vacías). El JSON de CYK incluye
+además testigos, árbol y derivación izquierda.
 `--json RUTA` crea las carpetas necesarias y exporta una lista de resultados completos en UTF-8,
 incluidos evidencia y contadores. La consola configura stdout en UTF-8 para imprimir ε y ⊢.
 
 Códigos de salida: **0** aceptación, **1** rechazo, **2** inconclusión/error de uso o exportación,
 CYK exclusivo ausente o discrepancia entre métodos. Un límite alcanzado nunca significa rechazo.
 `scripts/conteos_pda.py` imprime ocho frases con conteos en CSV; no utiliza tiempos de reloj.
+`scripts/benchmark.py` ejecuta PDA y CYK sobre cuatro familias de frases y regenera
+`docs/operaciones.csv` (determinista, sin tiempos); `--salida -` lo imprime en stdout.
 
 ## Lista de entrega
 
@@ -377,7 +382,11 @@ CYK exclusivo ausente o discrepancia entre métodos. Un límite alcanzado nunca 
 - [x] Consola, pruebas y conteos: `main.py`, `tests/test_grammar_automata.py`, `tests/test_pda.py`,
   `tests/test_main.py`, `scripts/conteos_pda.py`.
 - [x] Preparación: `.gitignore`, `salidas/.gitkeep`, README y enunciado `Proyecto 2 2026.pdf`.
-- [ ] Carlos: CYK, pruebas propias e integración real, benchmark y comparación, informe PDF y video.
+- [x] CYK, diseño y análisis: `recognizer/cyk.py`, `docs/cyk.md`.
+- [x] Pruebas CYK, integración y consola: `tests/test_cyk.py`, `tests/test_integration.py`, `tests/test_cli.py`.
+- [x] Experimentos: `scripts/benchmark.py`, `docs/operaciones.csv`.
+- [ ] Informe: borrador `docs/informe.md` revisado por David; generar `docs/informe.pdf`.
+- [ ] Video: guion `docs/guion_video.md`; grabar, subir no listado y verificar duración.
 - [ ] Revisar entre ambos los contratos y la evidencia de cada método.
 - [ ] Convertir `DeividArriaza/proyecto2-tdc` a **privado** (el brief informa que hoy es público).
 - [ ] Compartir el repositorio con docente y auxiliar y verificar sus accesos.
