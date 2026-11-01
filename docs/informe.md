@@ -4,8 +4,8 @@ Universidad del Valle de Guatemala · Teoría de la Computación CC2019, secció
 
 | Integrante | Carné | Responsabilidad principal |
 | --- | --- | --- |
-| David Lopez | **PENDIENTE** | PDA, extensión del proyecto 1, consola, repositorio |
-| Carlos Lopez | **PENDIENTE** | CYK, integración, experimentos, comparación, informe, video |
+| David Lopez | 24730 | PDA, extensión del proyecto 1, consola, repositorio |
+| Carlos Lopez | 24531 | CYK, integración, experimentos, comparación, informe, video |
 
 - Repositorio (privado): **PENDIENTE** (enlace final tras D10)
 - Video (YouTube, no listado, ≤ 10 min): **PENDIENTE** (enlace final tras C10)
