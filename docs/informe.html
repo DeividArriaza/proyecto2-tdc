@@ -1,95 +1,116 @@
 <!doctype html><html lang="es"><meta charset="utf-8"><title>Proyecto 2 — PDA y CYK</title><style>
 @page {
-  size: A4; margin: 2cm;
-  @bottom-center { content: "Proyecto 2 · TDC  |  " counter(page); font-size: 9pt; color: #526170; }
+  size: letter; margin: 1in;
+  @top-right { content: counter(page); font: 12pt "Times New Roman"; color: black; }
 }
-@page:first { @bottom-center { content: none; } }
 * { box-sizing: border-box; }
-body { font: 11pt/1.42 "Segoe UI", Arial, sans-serif; color: #172635; margin: 0; }
-h1, h2, h3 { line-height: 1.2; color: #174e70; break-after: avoid; }
-h1 { font-size: 27pt; margin-top: 26mm; }
-h2 { font-size: 18pt; margin: 0 0 8mm; }
-.major { break-before: page; }
-h3 { font-size: 13pt; margin-top: 7mm; }
-p { orphans: 3; widows: 3; }
-table { border-collapse: collapse; width: 100%; font-size: 9pt; margin: 5mm 0; }
-th, td { border: 1px solid #b4c2cb; padding: 2mm; text-align: left; vertical-align: top; }
-th { background: #eaf1f5; }
+body { font: 12pt/2 "Times New Roman", serif; color: black; margin: 0; text-align: left; }
+h1, h2, h3, h4, h5, h6 { font-size: 12pt; line-height: 2; margin: 0; break-after: avoid; }
+h1, h2 { text-align: center; font-weight: bold; }
+h3 { text-align: left; font-weight: bold; }
+h4 { text-align: left; font-weight: bold; font-style: italic; }
+h5, h6 { text-indent: .5in; font-weight: bold; }
+h6 { font-style: italic; }
+p { margin: 0; text-indent: .5in; orphans: 2; widows: 2; }
+.title-page { text-align: center; break-after: page; padding-top: .75in; }
+.title-page p { text-align: center; text-indent: 0; }
+.title-page .authors { margin-top: 24pt; }
+.abstract { break-after: page; }
+.abstract p { text-indent: 0; }
+.abstract .keywords { text-indent: .5in; }
+.body-title { break-before: page; }
+.references, .appendix { break-before: page; }
+.references p { padding-left: .5in; text-indent: -.5in; }
+table { border-collapse: collapse; width: 100%; font-size: 12pt; line-height: 1; margin: 0; }
+table { border-top: 1px solid black; border-bottom: 1px solid black; }
+th, td { border: none; padding: 4pt 3pt; text-align: left; vertical-align: top; }
+th { text-align: center; border-bottom: 1px solid black; font-weight: normal; }
 thead { display: table-header-group; }
-tr, pre, svg, figure { break-inside: avoid; }
-figure { margin: 0; }
-figure + figure { break-before: page; }
-pre { background: #f1f4f6; padding: 3mm; white-space: pre-wrap; overflow-wrap: anywhere; }
-code { font-family: Consolas, "DejaVu Sans Mono", monospace; font-size: 9pt; }
-td code { font-size: 8pt; overflow-wrap: anywhere; }
-a { color: #174e70; text-decoration: none; overflow-wrap: anywhere; }
-svg { display: block; width: 100%; height: auto; margin: 5mm 0; }
+tr, pre, svg, figure, .table-block { break-inside: avoid; }
+figure, .table-block { margin: 24pt 0; }
+figure p, .table-block p { text-indent: 0; }
+.trace td:nth-child(2) { font-family: Consolas, monospace; font-size: 10pt; }
+pre { padding: 0; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; }
+code { font-family: Consolas, "Courier New", monospace; font-size: 10pt; }
+td code { overflow-wrap: anywhere; }
+a { color: black; text-decoration: none; overflow-wrap: anywhere; }
+svg { display: block; width: 100%; height: auto; margin: 0; }
 .toc { break-before: page; break-after: page; }
 .toc h2 { break-before: auto; }
-h3[id^="33-"], h3[id^="62-"] { break-before: page; }
-.toc ul { list-style: none; padding-left: 0; }
-.toc li { margin: 4mm 0; }
-.caption { font-size: 9pt; color: #465968; }
-</style><body><h1 id="proyecto-2-reconocimiento-con-pda-y-cyk">Proyecto 2 — Reconocimiento con PDA y CYK</h1>
-<p>Universidad del Valle de Guatemala · Teoría de la Computación CC2019, sección 30 · Docente: Tomás Gálvez P. · Semestre 2, 2026</p>
-<table>
-<thead>
-<tr>
-<th>Integrante</th>
-<th>Carné</th>
-<th>Responsabilidad principal</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>David López</td>
-<td>24730</td>
-<td>PDA, extensión del proyecto 1, consola, repositorio</td>
-</tr>
-<tr>
-<td>Carlos López</td>
-<td>24531</td>
-<td>CYK, integración, experimentos, comparación, informe, video</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>Repositorio (privado): <a href="https://github.com/DeividArriaza/proyecto2-tdc">Repositorio del proyecto</a></li>
-<li>Video (YouTube, no listado, ≤ 10 min): <a href="https://youtu.be/9PlEOdXy-zE">Video de demostración</a></li>
-</ul>
-<p>Informe final · Noviembre de 2026</p>
+.toc ul { list-style: none; padding-left: .25in; margin: 0; }
+.toc > ul { padding-left: 0; }
+.toc li { margin: 0; }
+.formula { text-indent: 0; }
+</style><body><section class="title-page">
+<h1>Proyecto 2: Reconocimiento con PDA y CYK</h1>
+<p class="authors">David López — carné 24730<br>
+Carlos López — carné 24531</p>
+<p>Departamento de Ciencias de la Computación,<br>Universidad del Valle de Guatemala</p>
+<p>CC2019 Teoría de la Computación, sección 30</p>
+<p>Tomás Gálvez P.</p>
+<p>1 de noviembre de 2026</p>
+</section>
+
+<section class="abstract">
+<h2 id="resumen">Resumen</h2>
+<p>El presente trabajo examina el reconocimiento de frases de una gramática libre de contexto mediante
+dos métodos independientes: la simulación de un autómata de pila y el algoritmo CYK. La gramática,
+proporcionada en Forma Normal de Chomsky, contiene ocho variables, veintiún terminales y treinta
+alternativas. Se formaliza un autómata de tres estados equivalente a la gramática y se describe
+su implementación como extensión del autómata finito del proyecto anterior. La simulación emplea
+búsqueda en anchura, configuraciones completas y una poda segura por longitud. CYK construye una
+tabla de segmentos y conserva testigos para reconstruir una derivación. La evaluación utiliza
+conteos de operaciones, sin mediciones de tiempo, sobre cuarenta entradas aceptadas y rechazadas.
+Para la gramática fija, CYK presenta crecimiento ajustado cúbico; en el autómata se obtienen
+cotas superiores cuadráticas para las transiciones y cúbicas para los símbolos copiados. Los
+resultados distinguen las unidades de operación y muestran la sensibilidad del autómata a los
+rechazos tempranos, frente al recorrido completo de la tabla CYK. La validación comprende
+cincuenta y siete pruebas y comparación cruzada sobre cadenas cortas. Se concluye que la
+estructura de la gramática, la representación de las pilas y la conservación de evidencia
+condicionan la comparación entre ambos métodos.</p>
+<p class="keywords"><em>Palabras clave:</em> autómata de pila, CYK, gramática libre de contexto,
+conteo de operaciones, complejidad asintótica</p>
+</section>
 <div class="toc"><h2>Índice</h2>
 <ul>
-<li><a href="#1-objetivo">1. Objetivo</a></li>
-<li><a href="#2-la-gramatica-g">2. La gramática G</a></li>
-<li><a href="#3-pda-a-partir-de-g">3. PDA a partir de G</a><ul>
-<li><a href="#31-extension-del-automata-del-proyecto-1">3.1 Extensión del autómata del proyecto 1</a></li>
-<li><a href="#32-definicion-formal">3.2 Definición formal</a></li>
-<li><a href="#33-simulacion-y-evidencia">3.3 Simulación y evidencia</a></li>
+<li><a href="#resumen">Resumen</a></li>
+<li><a href="#gramatica-g">Gramática G</a></li>
+<li><a href="#pda-a-partir-de-g">PDA a partir de G</a><ul>
+<li><a href="#extension-del-automata-del-proyecto-1">Extensión del autómata del proyecto 1</a></li>
+<li><a href="#definicion-formal">Definición formal</a></li>
+<li><a href="#simulacion-y-evidencia">Simulación y evidencia</a></li>
 </ul>
 </li>
-<li><a href="#4-algoritmo-cyk">4. Algoritmo CYK</a></li>
-<li><a href="#5-ejecucion">5. Ejecución</a></li>
-<li><a href="#6-tasas-de-crecimiento">6. Tasas de crecimiento</a><ul>
-<li><a href="#61-cyk-desglose-y-cota-ajustada">6.1 CYK: desglose y cota ajustada</a></li>
-<li><a href="#62-pda-cota-exponencial-en-general-polinomial-en-g">6.2 PDA: cota exponencial en general, polinomial en G</a></li>
+<li><a href="#algoritmo-cyk">Algoritmo CYK</a></li>
+<li><a href="#tasas-de-crecimiento">Tasas de crecimiento</a><ul>
+<li><a href="#cyk-desglose-y-cota-ajustada">CYK: desglose y cota ajustada</a></li>
+<li><a href="#pda-cota-exponencial-en-general-polinomial-en-g">PDA: cota exponencial en general, polinomial en G</a></li>
 </ul>
 </li>
-<li><a href="#7-experimentos-reproducibles">7. Experimentos reproducibles</a><ul>
-<li><a href="#71-graficas-del-conteo-dominante">7.1 Gráficas del conteo dominante</a></li>
+<li><a href="#experimentos-reproducibles">Experimentos reproducibles</a></li>
+<li><a href="#graficas-del-conteo-dominante">Gráficas del conteo dominante</a></li>
+<li><a href="#discusion-de-desempenos">Discusión de desempeños</a></li>
+<li><a href="#validacion">Validación</a></li>
+<li><a href="#referencias">Referencias</a></li>
+<li><a href="#apendice-a">Apéndice A</a><ul>
+<li><a href="#instalacion-y-ejecucion">Instalación y ejecución</a></li>
 </ul>
 </li>
-<li><a href="#8-discusion-de-desempenos">8. Discusión de desempeños</a></li>
-<li><a href="#9-validacion">9. Validación</a></li>
-<li><a href="#10-referencias">10. Referencias</a></li>
 </ul>
 </div>
-<h2 id="1-objetivo">1. Objetivo</h2>
+<h1 class="body-title">Proyecto 2: Reconocimiento con PDA y CYK</h1>
+
 <p>Reconocer frases del lenguaje de la gramática G del enunciado con dos métodos independientes:
 un autómata de pila (PDA) obtenido de G, que extiende el autómata del proyecto 1, y el algoritmo
 CYK. Ambos registran los pasos que justifican su respuesta. Además se calcula la tasa de
 crecimiento de cada programa mediante conteo de operaciones y se comparan sus desempeños.</p>
-<h2 id="2-la-gramatica-g">2. La gramática G</h2>
+<p>La gramática y los requisitos corresponden al enunciado de la Universidad del Valle de Guatemala
+(2026). El código y los materiales reproducibles se encuentran en el
+<a href="https://github.com/DeividArriaza/proyecto2-tdc">repositorio del proyecto</a>; la demostración está
+disponible en el <a href="https://youtu.be/9PlEOdXy-zE">video del proyecto</a>.
+La documentación técnica complementaria detalla los contratos, algoritmos y datos
+(López y López, 2026). Las instrucciones de instalación y ejecución se incluyen en el Apéndice A.</p>
+<h2 id="gramatica-g">Gramática G</h2>
 <p>G = (V_G, Σ, S, R), con V_G = {S, VP, PP, NP, V, P, N, Det} y Σ = {cooks, drinks, eats, cuts, he, she,
 in, with, a, the, cat, dog, beer, cake, juice, meat, soup, fork, knife, oven, spoon}.</p>
 <pre><code class="language-text">S  → NP VP              PP  → P NP              V   → cooks | drinks | eats | cuts
@@ -102,14 +123,14 @@ Está definida una sola vez en <code>recognizer/grammar.py</code> y la usan ambo
 comparan esa definición con el enunciado. <strong>Entrada:</strong> cada palabra separada por espacios en blanco
 es un token y n es la cantidad de palabras. No se cambian mayúsculas ni puntuación: <code>He cooks</code> y
 <code>he cooks.</code> se rechazan. La cadena vacía se rechaza porque G no deriva ε.</p>
-<h2 class="major" id="3-pda-a-partir-de-g">3. PDA a partir de G</h2>
-<h3 id="31-extension-del-automata-del-proyecto-1">3.1 Extensión del autómata del proyecto 1</h3>
+<h2 id="pda-a-partir-de-g">PDA a partir de G</h2>
+<h3 id="extension-del-automata-del-proyecto-1">Extensión del autómata del proyecto 1</h3>
 <p>El modelo AFN del proyecto 1 se reutiliza con imports relativos y comentarios de procedencia en <code>recognizer/proyecto1/</code> (commit <code>750243e</code>
 de <code>primer-proyecto-tdc</code>). <code>AutomataPila</code> en <code>recognizer/automata.py</code> <strong>hereda</strong> de esa clase y
 agrega alfabeto de pila Γ, símbolo de fondo Z0 y transiciones <code>(estado, lectura|ε, cima) →
 {(destino, secuencia_a_apilar)}</code>. La pila es una tupla con la cima en el índice 0; reemplazar la cima
 por <code>()</code> desapila. EPSILON se toma del proyecto 1.</p>
-<h3 id="32-definicion-formal">3.2 Definición formal</h3>
+<h3 id="definicion-formal">Definición formal</h3>
 <p>M = (Q, Σ, Γ, δ, q0, Z0, F) con Q = {q0, q1, q2}, Γ = V_G ∪ Σ ∪ {Z0}, F = {q2} y:</p>
 <ol>
 <li>δ(q0, ε, Z0) = {(q1, S Z0)} — inicialización.</li>
@@ -121,13 +142,13 @@ por <code>()</code> desapila. EPSILON se toma del proyecto 1.</p>
 la pila contiene β Z0, entonces S ⇒* uβ por una derivación izquierda; al aceptar, β = ε y S ⇒* w. Por tanto L(M) ⊆ L(G). Recíprocamente, cada
 derivación izquierda de una palabra de G se simula mediante las expansiones de su variable
 izquierda y la lectura de los terminales resultantes, hasta quedar Z0 y habilitar q2.
-Así L(G) ⊆ L(M) y L(M) = L(G). Es la construcción estándar CFG a PDA de HMU y Sipser;
-las <a href="https://www3.cs.stonybrook.edu/~cse350/slides/pda2.pdf">notas de Stony Brook</a>
-presentan esta misma estrategia de derivación izquierda.</p>
+Así L(G) ⊆ L(M) y L(M) = L(G). Esta construcción corresponde a la equivalencia entre gramáticas libres de contexto y
+autómatas de pila descrita por Hopcroft et al. (2007) y Sipser (2013). Las notas de
+Stony Brook University (s. f.) presentan la misma estrategia de derivación izquierda.</p>
 <p>Formalmente δ: Q × (Σ ∪ {ε}) × Γ → ℘(Q × Γ*); los casos no enumerados tienen
 conjunto de destinos vacío. La pila inicial es Z0 y su cima se escribe a la izquierda.
 En q2 queda el fondo: se acepta por estado final, no por vaciar la pila.</p>
-<h3 id="33-simulacion-y-evidencia">3.3 Simulación y evidencia</h3>
+<h3 id="simulacion-y-evidencia">Simulación y evidencia</h3>
 <p>El algoritmo mantiene una cola con la configuración inicial (q0, 0, (Z0,)). Antes de expandir
 el frente comprueba aceptación y después el límite opcional. Para cada configuración extraída
 consulta las transiciones ε y, si queda entrada, las del siguiente token. Cada destino crea
@@ -142,6 +163,10 @@ vacías, cada símbolo sobre el fondo debe consumir al menos una palabra; una co
 símbolos pendientes que palabras restantes se poda con seguridad. Esto garantiza terminación a pesar
 de la recursión izquierda VP → VP PP. La evidencia contiene todas las configuraciones exploradas
 con su padre y transición, el recorrido aceptante validado o la causa del agotamiento.</p>
+<p>Como se presenta en la Tabla 1, se conserva la evidencia del reconocimiento y del conteo correspondiente.</p>
+<div class="table-block trace">
+<p><strong>Tabla 1</strong></p>
+<p><em>Recorrido aceptante del PDA para he cooks</em></p>
 <table>
 <thead>
 <tr>
@@ -193,10 +218,15 @@ con su padre y transición, el recorrido aceptante validado o la causa del agota
 </tr>
 </tbody>
 </table>
+<p><em>Nota.</em> La cima de la pila se escribe a la izquierda; Z0 es el símbolo de fondo.</p>
+</div>
 <p>Cada fila se relaciona con la siguiente por ⊢. Esta es la ruta aceptante reconstruida, no toda
 la exploración BFS: <code>he cooks</code> genera 15 configuraciones, expande 11, evalúa 14 transiciones,
 realiza 21 consultas, copia 50 símbolos y poda 3 candidatas; no encuentra repetidas.</p>
-<h2 class="major" id="4-algoritmo-cyk">4. Algoritmo CYK</h2>
+<h2 id="algoritmo-cyk">Algoritmo CYK</h2>
+<p>El reconocimiento ascendente mediante programación dinámica se fundamenta en el análisis
+de lenguajes libres de contexto (Younger, 1967; Sipser, 2013). El recurso introductorio
+enlazado en el enunciado también describe CYK (Colaboradores de Wikipedia, s. f.).</p>
 <p>T[i, l] es el conjunto de variables que derivan las l palabras desde la posición i. La base usa las
 reglas léxicas; para l = 2..n, cada corte c combina T[i, c] y T[i+c, l−c] con las reglas A → B C.
 Se acepta si S ∈ T[0, n]. Cada variable guarda su primer testigo (producción, corte), con lo cual se
@@ -209,32 +239,14 @@ l=1 | NP      V,VP    Det     N
 </code></pre>
 <p>S ⇒ NP VP ⇒ she VP ⇒ she V NP ⇒ she drinks NP ⇒ she drinks Det N ⇒ she drinks a N ⇒ she drinks a beer.
 En un rechazo (<code>he eats cake</code>) la tabla completa muestra que S no está en la celda final.</p>
-<h2 class="major" id="5-ejecucion">5. Ejecución</h2>
-<p>Python ≥ 3.10 para los reconocedores, con biblioteca estándar; verificado con Python 3.14.
-No se requiere instalar paquetes para reconocer ni ejecutar las pruebas. Desde la raíz del repositorio:</p>
-<pre><code class="language-powershell">python main.py &quot;she drinks a beer&quot; --traza                 # PDA y CYK, con pasos
-python main.py &quot;he eats cake&quot; --metodo cyk --traza         # solo CYK
-python main.py &quot;he cooks&quot; --json salidas/resultado.json    # evidencia completa en JSON
-python -m unittest discover -s tests -v                    # todas las pruebas
-python scripts/conteos_pda.py                              # ocho casos del PDA
-python scripts/benchmark.py                                # regenera docs/operaciones.csv
-python scripts/graficas.py                                 # genera SVG sin dependencias
-</code></pre>
-<p>Códigos de salida: 0 aceptada, 1 rechazada, 2 inconclusa, error o discrepancia entre métodos.</p>
-<p>Para generar el documento se necesita Chrome y la dependencia separada de <code>requirements-docs.txt</code>.
-En PowerShell, el entorno de documentación se crea fuera del repositorio:</p>
-<pre><code class="language-powershell">python -m venv ../_coord-proyecto2/venv-docs
-../_coord-proyecto2/venv-docs/Scripts/python.exe -m pip install -r requirements-docs.txt
-../_coord-proyecto2/venv-docs/Scripts/python.exe scripts/generar_pdf.py
-</code></pre>
-<p>El comando habitual, con ese entorno activo, es <code>python scripts/generar_pdf.py</code>.
-Se producen <code>docs/informe.html</code> autónomo y <code>docs/informe.pdf</code>. El script busca Chrome en
-su ruta estándar de Windows; permite <code>--chrome RUTA</code> o la variable <code>CHROME_PATH</code>.
-No se requiere conexión a Internet al imprimir: las figuras se embeben en el HTML.</p>
-<h2 class="major" id="6-tasas-de-crecimiento">6. Tasas de crecimiento</h2>
-<h3 id="61-cyk-desglose-y-cota-ajustada">6.1 CYK: desglose y cota ajustada</h3>
+<h2 id="tasas-de-crecimiento">Tasas de crecimiento</h2>
+<h3 id="cyk-desglose-y-cota-ajustada">CYK: desglose y cota ajustada</h3>
 <p>Con R_bin = 5 y R_lex = 25 reglas, los bucles recorren todas las celdas, cortes y reglas sin salidas
 tempranas:</p>
+<p>Como se presenta en la Tabla 2, se conserva la evidencia del reconocimiento y del conteo correspondiente.</p>
+<div class="table-block">
+<p><strong>Tabla 2</strong></p>
+<p><em>Conteos exactos del llenado de la tabla CYK</em></p>
 <table>
 <thead>
 <tr>
@@ -261,6 +273,8 @@ tempranas:</p>
 </tr>
 </tbody>
 </table>
+<p><em>Nota.</em> Los valores corresponden a G, con 5 reglas binarias y 25 léxicas.</p>
+</div>
 <p>Con j = l−1, el conteo de cortes se obtiene de:</p>
 <p class="formula">∑<sub>j=0</sub><sup>n−1</sup> (n−j)j =
 n · n(n−1)/2 − (n−1)n(2n−1)/6 = (n³−n)/6.</p>
@@ -281,11 +295,11 @@ Para G esos costos son constantes.</p>
 la lista explícita de formas de la derivación y su reconstrucción requieren O(n²).
 Esto sigue dominado por Θ(n³) en entradas largas de G. Para n = 0 todos los contadores
 son cero y se rechaza sin tabla.</p>
-<h3 id="62-pda-cota-exponencial-en-general-polinomial-en-g">6.2 PDA: cota exponencial en general, polinomial en G</h3>
-<p>Operación dominante elegida por David: símbolos de pila copiados al construir cada sucesor.
-Para una CFG fija sin ε con poda, el número de configuraciones está acotado por O(n·g^(n+1)), con
-g = |Γ|, de donde se obtiene una cota superior exponencial O(n²·g^(n+1)). Para <strong>G</strong> toda pila
-alcanzable tiene la forma β PP^k Z0, con β en un conjunto finito y 0 ≤ k ≤ n; hay O(n) pilas y
+<h3 id="pda-cota-exponencial-en-general-polinomial-en-g">PDA: cota exponencial en general, polinomial en G</h3>
+<p>La operación dominante seleccionada corresponde a símbolos de pila copiados al construir cada sucesor.
+Para una CFG fija sin ε con poda, el número de configuraciones está acotado por O(n·g<sup>n+1</sup>), con
+g = |Γ|, de donde se obtiene una cota superior exponencial O(n²·g<sup>n+1</sup>). Para <strong>G</strong> toda pila
+alcanzable tiene la forma β PP<sup>k</sup> Z0, con β en un conjunto finito y 0 ≤ k ≤ n; hay O(n) pilas y
 O(n²) configuraciones. Cotas superiores para G: <strong>O(n²) transiciones evaluadas</strong> y <strong>O(n³) símbolos
 copiados</strong> (y memoria O(n³), porque se guardan las pilas completas como evidencia).
 Las cotas anteriores son <strong>superiores</strong>, no tasas Θ demostradas. Suponen gramática fija,
@@ -301,6 +315,10 @@ y dos pasos administrativos, cualquier ruta aceptante tiene <strong>3n+1 transic
 Esto no hace lineal a <code>validar_recorrido</code>: compara las pilas explícitas antes y después,
 por lo que su costo es O(suma de longitudes de pila), a lo sumo O(n²), además de recibir
 el recorrido. Buscar la ruta con BFS tiene los costos superiores ya derivados.</p>
+<p>Como se presenta en la Tabla 3, se conserva la evidencia del reconocimiento y del conteo correspondiente.</p>
+<div class="table-block">
+<p><strong>Tabla 3</strong></p>
+<p><em>Definición de los contadores de la simulación PDA</em></p>
 <table>
 <thead>
 <tr>
@@ -335,14 +353,20 @@ el recorrido. Buscar la ruta con BFS tiene los costos superiores ya derivados.</
 </tr>
 </tbody>
 </table>
+<p><em>Nota.</em> Los contadores corresponden a la implementación de recognizer/pda.py.</p>
+</div>
 <p>Las copias cuentan referencias de la cola de la tupla y su concatenación. No incluyen todas
 las copias del registro ni el costo exacto de hash: miden el crecimiento de la representación.
 Se cumple generadas = 1 + transiciones evaluadas. CYK cuenta además <code>reglas_satisfechas</code>
 (coincidencias léxicas/binarias) y <code>variables_agregadas</code> (primer testigo en cada celda).</p>
-<h2 class="major" id="7-experimentos-reproducibles">7. Experimentos reproducibles</h2>
+<h2 id="experimentos-reproducibles">Experimentos reproducibles</h2>
 <p><code>scripts/benchmark.py</code> ejecuta ambos métodos sin límite de búsqueda y escribe <code>docs/operaciones.csv</code>
 (40 filas, determinista; no mide tiempos). Familias, con F_k = <code>she eats the cake</code> + k veces
 <code>with a fork</code> (n = 3k + 4):</p>
+<p>Como se presenta en la Tabla 4, se conserva la evidencia del reconocimiento y del conteo correspondiente.</p>
+<div class="table-block">
+<p><strong>Tabla 4</strong></p>
+<p><em>Familias de entradas de los experimentos</em></p>
 <table>
 <thead>
 <tr>
@@ -379,9 +403,15 @@ Se cumple generadas = 1 + transiciones evaluadas. CYK cuenta además <code>regla
 </tr>
 </tbody>
 </table>
+<p><em>Nota.</em> F_k es la frase base con k complementos; los datos proceden de docs/operaciones.csv.</p>
+</div>
 <p>Columnas: <code>pda_*</code> son los contadores de <code>docs/pda.md</code>; <code>cyk_*</code> los de <code>docs/cyk.md</code>;
 <code>pda_causa</code> indica <code>frontera_agotada</code> o <code>fuera_del_alfabeto</code>; <code>pda_limite</code> vacío significa que no
 hubo límite y, por tanto, ningún resultado es inconcluso. <code>coinciden</code> es <code>True</code> en las 40 filas.</p>
+<p>Como se presenta en la Tabla 5, se conserva la evidencia del reconocimiento y del conteo correspondiente.</p>
+<div class="table-block">
+<p><strong>Tabla 5</strong></p>
+<p><em>Resumen de operaciones registradas por ambos reconocedores</em></p>
 <table>
 <thead>
 <tr>
@@ -451,14 +481,20 @@ hubo límite y, por tanto, ningún resultado es inconcluso. <code>coinciden</cod
 </tr>
 </tbody>
 </table>
+<p><em>Nota.</em> Datos de docs/operaciones.csv. Las unidades de los dos programas no son equivalentes.</p>
+</div>
 <p>En las 16 filas de F, los conteos coinciden exactamente con estos polinomios (y análogos en R):</p>
 <ul>
 <li>PDA, transiciones evaluadas: (11/3)n² + 3n − 14/3.</li>
 <li>PDA, símbolos copiados: (22/9)n³ + (71/6)n² − (107/6)n + 266/9.</li>
 <li>CYK, comprobaciones binarias: (5/6)(n³ − n), igual que la fórmula analítica.</li>
 </ul>
-<h3 id="71-graficas-del-conteo-dominante">7.1 Gráficas del conteo dominante</h3>
-<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 590" role="img" aria-label="Operaciones por longitud · escala lineal">
+<h2 id="graficas-del-conteo-dominante">Gráficas del conteo dominante</h2>
+<p>La Figura 1 presenta el crecimiento de los conteos de ambas familias.</p>
+<figure>
+<p><strong>Figura 1</strong></p>
+<p><em>Operaciones por longitud en escala lineal</em></p>
+<p><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 590" role="img" aria-label="Operaciones por longitud · escala lineal">
 <rect width="100%" height="100%" fill="white"/>
 <g font-family="Segoe UI,Arial,sans-serif" font-size="17" fill="#203040">
 <text x="100" y="35" font-size="25" font-weight="bold">Operaciones por longitud · escala lineal</text>
@@ -565,10 +601,14 @@ hubo límite y, por tanto, ningún resultado es inconcluso. <code>coinciden</cod
 <text x="590" y="548">CYK: reglas comprobadas · R</text>
 <text x="100" y="582" font-size="15">F: aceptadas · R: rechazadas con PP incompleto. Las unidades difieren entre métodos.</text>
 </g></svg>
-<figcaption class="caption">Figura 1. Conteos del CSV para F (aceptadas) y R (rechazadas). Se usan las copias de
-símbolos del PDA y las comprobaciones binarias de CYK. Las operaciones de distintos programas
-no cuestan lo mismo; la altura de las curvas no equivale a una comparación de segundos.</figcaption></figure>
-<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 590" role="img" aria-label="Operaciones por longitud · escala log–log">
+</p>
+<p><em>Nota.</em> Conteos del CSV para F (aceptadas) y R (rechazadas). Se usan las copias de símbolos del PDA y las comprobaciones binarias de CYK. Las operaciones de distintos programas no cuestan lo mismo; la altura de las curvas no equivale a una comparación de segundos. Fuente: docs/operaciones.csv.</p>
+</figure>
+<p>La Figura 2 presenta el crecimiento de los conteos de ambas familias.</p>
+<figure>
+<p><strong>Figura 2</strong></p>
+<p><em>Operaciones por longitud en escala logarítmica</em></p>
+<p><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 590" role="img" aria-label="Operaciones por longitud · escala log–log">
 <rect width="100%" height="100%" fill="white"/>
 <g font-family="Segoe UI,Arial,sans-serif" font-size="17" fill="#203040">
 <text x="100" y="35" font-size="25" font-weight="bold">Operaciones por longitud · escala log–log</text>
@@ -673,23 +713,23 @@ no cuestan lo mismo; la altura de las curvas no equivale a una comparación de s
 <text x="590" y="548">CYK: reglas comprobadas · R</text>
 <text x="100" y="582" font-size="15">F: aceptadas · R: rechazadas con PP incompleto. Las unidades difieren entre métodos.</text>
 </g></svg>
-<figcaption class="caption">Figura 2. Los mismos datos con ambos ejes logarítmicos, incluidos los casos cortos. Las
-pendientes se aproximan a 3 en entradas largas de estas familias, coherentes con términos
-cúbicos; la evidencia finita no demuestra una cota ajustada del PDA.</figcaption></figure>
-<h2 class="major" id="8-discusion-de-desempenos">8. Discusión de desempeños</h2>
-<p><strong>Lo que dice el análisis.</strong> CYK es Θ(n³) para cualquier gramática CNF fija y cualquier entrada:
+</p>
+<p><em>Nota.</em> Los mismos datos con ambos ejes logarítmicos, incluidos los casos cortos. Las pendientes se aproximan a 3 en entradas largas de estas familias, coherentes con términos cúbicos; la evidencia finita no demuestra una cota ajustada del PDA. Fuente: docs/operaciones.csv.</p>
+</figure>
+<h2 id="discusion-de-desempenos">Discusión de desempeños</h2>
+<p><strong>Resultados analíticos.</strong> CYK es Θ(n³) para cualquier gramática CNF fija y cualquier entrada:
 su costo es el de llenar la tabla, no el de la frase. El PDA no determinista simulado por búsqueda
 no tiene, en general, una cota polinomial: para una CFG arbitraria la cota superior es exponencial,
-y sin visitados ni poda la recursión izquierda lo haría no terminar. En G, la forma restringida de
+y sin visitados ni poda la recursión izquierda podría impedir su terminación. En G, la forma restringida de
 las pilas reduce el espacio de configuraciones a O(n²); por eso el PDA resulta polinomial aquí.
 Esa es una propiedad de G, no del método.</p>
-<p><strong>Lo que muestran los datos.</strong> Medido en «decisiones» (transiciones del PDA frente a comprobaciones
-de reglas de CYK), el PDA crece como n² y CYK como n³: el PDA hace más trabajo con n = 4
+<p><strong>Resultados experimentales.</strong> Medido en «decisiones» (transiciones del PDA frente a comprobaciones
+de reglas de CYK), el PDA crece como n² y CYK como n³: el PDA registra más operaciones con n = 4
 (66 frente a 50) y menos desde n = 7 (196 frente a 280); con n = 49, 8 946 frente a 98 000.
 Medido en el trabajo real de la representación del PDA, cada transición copia y compara una pila de
 longitud O(n), y los símbolos copiados crecen como (22/9)n³, unas 2,9 veces las comprobaciones de
 CYK para n grande. <strong>Las unidades no son equivalentes</strong>: una comprobación de CYK hace hasta dos consultas a
-diccionarios; una transición del PDA construye, hashea y registra una tupla. Ninguna de las dos
+diccionarios; una transición del PDA construye, calcula el hash y registra una tupla. Ninguna de las dos
 métricas por sí sola decide cuál programa es «más rápido».</p>
 <p><strong>Aceptación y rechazo.</strong> CYK conserva los conteos de celdas, cortes y comprobaciones para frases de igual n
 (filas R, E y D con n = 50: 104 125 comprobaciones; F llega a n = 49). El PDA depende de la entrada: rechaza
@@ -702,19 +742,18 @@ a la configuración final cuando ya exploró casi todo el espacio alcanzable.</p
 para terminar; CYK, ascendente, no se ve afectado porque cada celda combina segmentos más cortos.</p>
 <p><strong>Reutilización de subproblemas.</strong> CYK calcula cada segmento una sola vez (programación dinámica).
 El PDA no reutiliza el análisis de un segmento: el mismo NP puede analizarse de nuevo con distintos
-sufijos PP^k en la pila, porque las configuraciones difieren. En las 40 filas se observa <code>repetidas = 0</code>: no hay
+sufijos PP<sup>k</sup> en la pila, porque las configuraciones difieren. En las 40 filas se observa <code>repetidas = 0</code>: no hay
 configuraciones idénticas que aprovechar. A la vez, la tabla de CYK es muy dispersa en G
-((7n−1)/3 variables agregadas en F, frente a n(n+1)/2 celdas): CYK paga por subproblemas que
-casi nunca producen algo.</p>
+((7n−1)/3 variables agregadas en F, frente a n(n+1)/2 celdas): CYK examina numerosos subproblemas que no incorporan variables a la tabla.</p>
 <p><strong>Memoria.</strong> CYK: Θ(n²) celdas. PDA: O(n²) configuraciones con pilas de longitud O(n), O(n³)
 símbolos guardados como evidencia en G, y exponencial en el peor caso general.</p>
 <p><strong>Límites de esta evidencia.</strong> Los experimentos usan familias concretas con n ≤ 50. Que los
 conteos coincidan con polinomios en 16 puntos respalda las cotas, pero no las demuestra: la
-demostración es el análisis de las secciones 6.1 y 6.2. Los conteos no miden constantes de Python
+demostración es el análisis de las apartados sobre las tasas de crecimiento de CYK y del PDA. Los conteos no miden constantes de Python
 ni de la máquina, y no se usaron tiempos de reloj. No puede concluirse que un método sea siempre
 mejor: para G y frases largas el PDA hace menos transiciones, pero CYK ofrece una garantía Θ(n³)
 para cualquier gramática CNF, que la búsqueda en el PDA no tiene.</p>
-<h2 class="major" id="9-validacion">9. Validación</h2>
+<h2 id="validacion">Validación</h2>
 <p><code>python -m unittest discover -s tests</code>: <strong>57 pruebas OK</strong>, verificadas en esta entrega; pruebas de gramática, modelo de autómata, PDA, CYK,
 consola e integración. CYK se comprueba con tablas calculadas a mano (<code>he cooks</code>,
 <code>she drinks a beer</code>), conteos cerrados, árboles cuyas hojas son exactamente los tokens y cuyas
@@ -723,6 +762,10 @@ La validación cruzada compara las decisiones del PDA y CYK en todas las cadenas
 sobre {he, cooks, eats, with, the, cat} (9 331 cadenas) y en 60 frases generadas de G con semilla
 fija junto con versiones perturbadas. Es evidencia acotada a esas longitudes y alfabeto.</p>
 <p>Casos mínimos comprobados desde la consola y las pruebas:</p>
+<p>Como se presenta en la Tabla 6, se conserva la evidencia del reconocimiento y del conteo correspondiente.</p>
+<div class="table-block">
+<p><strong>Tabla 6</strong></p>
+<p><em>Casos mínimos de validación de los reconocedores</em></p>
 <table>
 <thead>
 <tr>
@@ -761,19 +804,56 @@ fija junto con versiones perturbadas. Es evidencia acotada a esas longitudes y a
 </tr>
 </tbody>
 </table>
+<p><em>Nota.</em> Resultados contrastados mediante la consola y las pruebas automatizadas.</p>
+</div>
 <p>Con <code>python main.py "he cooks" --metodo pda --limite 1</code> se obtiene inconclusa y salida 2.
 El límite no se aplica a CYK ni convierte una búsqueda interrumpida en rechazo.
 El benchmark contiene 16 aceptaciones y 24 rechazos, sin límites ni discrepancias.
 Regenerarlo conserva los datos originales; solo cambia CRLF a LF.</p>
-<h2 class="major" id="10-referencias">10. Referencias</h2>
-<ul>
-<li>Hopcroft, J., Motwani, R. y Ullman, J. <em>Introduction to Automata Theory, Languages, and
-  Computation</em>, 3.ª ed. Temas: equivalencia CFG–PDA y prueba de pertenencia mediante CYK.</li>
-<li>Sipser, M. <em>Introduction to the Theory of Computation</em>, 3.ª ed. Temas: autómatas de pila, gramáticas libres de contexto y programación dinámica.</li>
-<li><a href="https://en.wikipedia.org/wiki/CYK_algorithm">CYK algorithm</a>, enlazado en el enunciado.</li>
-<li>Documentación del proyecto: <code>docs/acuerdos.md</code>, <code>docs/pda.md</code>, <code>docs/cyk.md</code>, <code>docs/operaciones.csv</code>.</li>
-<li>Stony Brook University. <a href="https://www3.cs.stonybrook.edu/~cse350/slides/pda2.pdf">Equivalence of Pushdown Automata with Context-Free Grammar</a>.
-  Material universitario consultado para la construcción CFG–PDA.</li>
-<li>Universidad del Valle de Guatemala. <em>Proyecto 2 2026</em>, enunciado y rúbrica del curso CC2019,
-  archivo <code>Proyecto 2 2026.pdf</code> del repositorio.</li>
-</ul></body></html>
+<section class="references">
+<h2 id="referencias">Referencias</h2>
+<p>Colaboradores de Wikipedia. (s. f.). CYK algorithm. En <em>Wikipedia</em>. Recuperado el 1 de noviembre
+de 2026, de <a href="https://en.wikipedia.org/wiki/CYK_algorithm">https://en.wikipedia.org/wiki/CYK_algorithm</a></p>
+<p>Hopcroft, J. E., Motwani, R., y Ullman, J. D. (2007). <em>Introduction to automata theory, languages,
+and computation</em> (3.ª ed.). Pearson/Addison-Wesley.
+<a href="https://www.informit.com/store/introduction-to-automata-theory-languages-and-computation-9780321455369">https://www.informit.com/store/introduction-to-automata-theory-languages-and-computation-9780321455369</a></p>
+<p>López, C., y López, D. (2026). <em>Documentación técnica del proyecto 2: Acuerdos, PDA, CYK y
+conteos de operaciones</em> [Documentación y datos de proyecto]. Universidad del Valle de Guatemala.
+Archivos docs/acuerdos.md, docs/pda.md, docs/cyk.md y docs/operaciones.csv del
+<a href="https://github.com/DeividArriaza/proyecto2-tdc">repositorio del proyecto</a>.</p>
+<p>Sipser, M. (2013). <em>Introduction to the theory of computation</em> (3.ª ed.). Cengage Learning.
+<a href="https://www.cengage.com/c/introduction-to-the-theory-of-computation-3e-sipser/9781133187790">https://www.cengage.com/c/introduction-to-the-theory-of-computation-3e-sipser/9781133187790</a></p>
+<p>Stony Brook University. (s. f.). <em>Equivalence of pushdown automata with context-free grammar</em>
+[Diapositivas de clase].
+<a href="https://www3.cs.stonybrook.edu/~cse350/slides/pda2.pdf">https://www3.cs.stonybrook.edu/~cse350/slides/pda2.pdf</a></p>
+<p>Universidad del Valle de Guatemala. (2026). <em>Proyecto 2 2026</em>
+[Enunciado del curso CC2019, documento no publicado].</p>
+<p>Younger, D. H. (1967). Recognition and parsing of context-free languages in time n³.
+<em>Information and Control, 10</em>(2), 189–208.
+<a href="https://doi.org/10.1016/S0019-9958(67)80007-X">https://doi.org/10.1016/S0019-9958(67)80007-X</a></p>
+</section>
+<section class="appendix">
+<h2 id="apendice-a">Apéndice A</h2>
+<h3 id="instalacion-y-ejecucion">Instalación y ejecución</h3>
+<p>Python ≥ 3.10 para los reconocedores, con biblioteca estándar; verificado con Python 3.14.
+No se requiere instalar paquetes para reconocer ni ejecutar las pruebas. Desde la raíz del repositorio:</p>
+<pre><code class="language-powershell">python main.py &quot;she drinks a beer&quot; --traza                 # PDA y CYK, con pasos
+python main.py &quot;he eats cake&quot; --metodo cyk --traza         # solo CYK
+python main.py &quot;he cooks&quot; --json salidas/resultado.json    # evidencia completa en JSON
+python -m unittest discover -s tests -v                    # todas las pruebas
+python scripts/conteos_pda.py                              # ocho casos del PDA
+python scripts/benchmark.py                                # regenera docs/operaciones.csv
+python scripts/graficas.py                                 # genera SVG sin dependencias
+</code></pre>
+<p>Códigos de salida: 0 aceptada, 1 rechazada, 2 inconclusa, error o discrepancia entre métodos.</p>
+<p>Para generar el documento se necesita Chrome y la dependencia separada de <code>requirements-docs.txt</code>.
+En PowerShell, se utiliza un entorno separado para documentación:</p>
+<pre><code class="language-powershell">python -m venv .venv-docs
+.venv-docs/Scripts/python.exe -m pip install -r requirements-docs.txt
+.venv-docs/Scripts/python.exe scripts/generar_pdf.py
+</code></pre>
+<p>El comando habitual, con ese entorno activo, es <code>python scripts/generar_pdf.py</code>.
+Se producen <code>docs/informe.html</code> autónomo y <code>docs/informe.pdf</code>. El script busca Chrome en
+su ruta estándar de Windows; permite <code>--chrome RUTA</code> o la variable <code>CHROME_PATH</code>.
+No se requiere conexión a Internet al imprimir: las figuras se embeben en el HTML.</p>
+</section></body></html>

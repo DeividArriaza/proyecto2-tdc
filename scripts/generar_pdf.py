@@ -1,4 +1,4 @@
-"""Convierte el informe Markdown a HTML autónomo y PDF A4 mediante Chrome headless."""
+"""Convierte el informe Markdown a HTML autónomo y PDF APA mediante Chrome headless."""
 
 import argparse
 import os
@@ -11,36 +11,47 @@ import tempfile
 RAIZ = Path(__file__).resolve().parents[1]
 CSS = """
 @page {
-  size: A4; margin: 2cm;
-  @bottom-center { content: "Proyecto 2 · TDC  |  " counter(page); font-size: 9pt; color: #526170; }
+  size: letter; margin: 1in;
+  @top-right { content: counter(page); font: 12pt "Times New Roman"; color: black; }
 }
-@page:first { @bottom-center { content: none; } }
 * { box-sizing: border-box; }
-body { font: 11pt/1.42 "Segoe UI", Arial, sans-serif; color: #172635; margin: 0; }
-h1, h2, h3 { line-height: 1.2; color: #174e70; break-after: avoid; }
-h1 { font-size: 27pt; margin-top: 26mm; }
-h2 { font-size: 18pt; margin: 0 0 8mm; }
-.major { break-before: page; }
-h3 { font-size: 13pt; margin-top: 7mm; }
-p { orphans: 3; widows: 3; }
-table { border-collapse: collapse; width: 100%; font-size: 9pt; margin: 5mm 0; }
-th, td { border: 1px solid #b4c2cb; padding: 2mm; text-align: left; vertical-align: top; }
-th { background: #eaf1f5; }
+body { font: 12pt/2 "Times New Roman", serif; color: black; margin: 0; text-align: left; }
+h1, h2, h3, h4, h5, h6 { font-size: 12pt; line-height: 2; margin: 0; break-after: avoid; }
+h1, h2 { text-align: center; font-weight: bold; }
+h3 { text-align: left; font-weight: bold; }
+h4 { text-align: left; font-weight: bold; font-style: italic; }
+h5, h6 { text-indent: .5in; font-weight: bold; }
+h6 { font-style: italic; }
+p { margin: 0; text-indent: .5in; orphans: 2; widows: 2; }
+.title-page { text-align: center; break-after: page; padding-top: .75in; }
+.title-page p { text-align: center; text-indent: 0; }
+.title-page .authors { margin-top: 24pt; }
+.abstract { break-after: page; }
+.abstract p { text-indent: 0; }
+.abstract .keywords { text-indent: .5in; }
+.body-title { break-before: page; }
+.references, .appendix { break-before: page; }
+.references p { padding-left: .5in; text-indent: -.5in; }
+table { border-collapse: collapse; width: 100%; font-size: 12pt; line-height: 1; margin: 0; }
+table { border-top: 1px solid black; border-bottom: 1px solid black; }
+th, td { border: none; padding: 4pt 3pt; text-align: left; vertical-align: top; }
+th { text-align: center; border-bottom: 1px solid black; font-weight: normal; }
 thead { display: table-header-group; }
-tr, pre, svg, figure { break-inside: avoid; }
-figure { margin: 0; }
-figure + figure { break-before: page; }
-pre { background: #f1f4f6; padding: 3mm; white-space: pre-wrap; overflow-wrap: anywhere; }
-code { font-family: Consolas, "DejaVu Sans Mono", monospace; font-size: 9pt; }
-td code { font-size: 8pt; overflow-wrap: anywhere; }
-a { color: #174e70; text-decoration: none; overflow-wrap: anywhere; }
-svg { display: block; width: 100%; height: auto; margin: 5mm 0; }
+tr, pre, svg, figure, .table-block { break-inside: avoid; }
+figure, .table-block { margin: 24pt 0; }
+figure p, .table-block p { text-indent: 0; }
+.trace td:nth-child(2) { font-family: Consolas, monospace; font-size: 10pt; }
+pre { padding: 0; margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; }
+code { font-family: Consolas, "Courier New", monospace; font-size: 10pt; }
+td code { overflow-wrap: anywhere; }
+a { color: black; text-decoration: none; overflow-wrap: anywhere; }
+svg { display: block; width: 100%; height: auto; margin: 0; }
 .toc { break-before: page; break-after: page; }
 .toc h2 { break-before: auto; }
-h3[id^="33-"], h3[id^="62-"] { break-before: page; }
-.toc ul { list-style: none; padding-left: 0; }
-.toc li { margin: 4mm 0; }
-.caption { font-size: 9pt; color: #465968; }
+.toc ul { list-style: none; padding-left: .25in; margin: 0; }
+.toc > ul { padding-left: 0; }
+.toc li { margin: 0; }
+.formula { text-indent: 0; }
 """
 
 
@@ -62,16 +73,11 @@ def main() -> None:
     docs = RAIZ / "docs"
     fuente = (docs / "informe.md").read_text(encoding="utf-8")
     conversor = markdown.Markdown(
-        extensions=["tables", "fenced_code", "toc"],
+        extensions=["tables", "fenced_code", "toc", "md_in_html"],
         extension_configs={"toc": {"toc_depth": "2-3"}},
     )
     cuerpo = conversor.convert(fuente)
     cuerpo = cuerpo.replace('<div class="toc">', '<div class="toc"><h2>Índice</h2>')
-    cuerpo = re.sub(r'<h2 id="([^\"]+)">([3-9]|10)\.',
-                    r'<h2 class="major" id="\1">\2.', cuerpo)
-    cuerpo = re.sub(r'<p>(<img[^>]+>)</p>\s*<p>(Figura [12]\..*?)</p>',
-                    r'<figure>\1<figcaption class="caption">\2</figcaption></figure>',
-                    cuerpo, flags=re.DOTALL)
 
     def embeber(coincidencia: re.Match) -> str:
         ruta = (docs / coincidencia.group(1)).resolve()
