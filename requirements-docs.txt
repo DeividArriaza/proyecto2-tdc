@@ -1,0 +1,2 @@
+# Solo para generar el informe; los reconocedores usan biblioteca estándar.
+Markdown==3.10.2

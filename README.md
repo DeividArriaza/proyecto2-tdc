@@ -35,9 +35,9 @@ La numeración identifica tareas; el orden de ejecución depende de la columna d
 | C5 | Carlos Lopez | Contar operaciones y analizar CYK | C2–C4 | Hecho (pendiente revisión de David) |
 | C6 | Carlos Lopez | Integrar, comparar respuestas y probar la consola | D7, D9, C4 | Hecho (pendiente revisión de David) |
 | C7 | Carlos Lopez | Generar experimentos de operaciones reproducibles | D8, C5, C6 | Hecho (pendiente revisión de David) |
-| C8 | Carlos Lopez | Redactar la comparación de desempeño | D8, C5, C7 | Borrador en `docs/informe.md` §8 (pendiente revisión de David) |
-| C9 | Carlos Lopez | Integrar y generar el informe PDF | D4, D8, C5–C8 | Borrador `docs/informe.md` (faltan carnés, enlaces y PDF) |
-| C10 | Carlos Lopez | Preparar, grabar y subir el video | C6, C9 y coordinación con David | Guion borrador `docs/guion_video.md` (falta grabar y subir) |
+| C8 | Carlos Lopez | Redactar la comparación de desempeño | D8, C5, C7 | Comparación final verificada con conteos y gráficas en `docs/informe.md` §8 |
+| C9 | Carlos Lopez | Integrar y generar el informe PDF | D4, D8, C5–C8 | Informe y PDF generados y revisados, con enlaces finales |
+| C10 | Carlos Lopez | Preparar, grabar y subir el video | C6, C9 y coordinación con David | Video subido (no listado) https://youtu.be/9PlEOdXy-zE |
 
 ## Forma de trabajo y delegación a agentes
 
@@ -337,7 +337,7 @@ Actualización de implementación D1–D9 y C1–C7: el plan anterior se conserv
 CYK y consola están implementados e integrados; la revisión cruzada entre ambos sigue pendiente. Los
 contratos están en [docs/acuerdos.md](docs/acuerdos.md); definición, evidencia y análisis del PDA en
 [docs/pda.md](docs/pda.md); diseño, evidencia y análisis de CYK en [docs/cyk.md](docs/cyk.md); el
-borrador del informe con la comparación en [docs/informe.md](docs/informe.md).
+informe final con la comparación en [docs/informe.md](docs/informe.md).
 
 Requiere Python >= 3.10, solo biblioteca estándar. No hay paquetes que instalar. Desde la raíz:
 
@@ -350,6 +350,7 @@ python main.py "he cooks" --metodo pda --limite 1
 python main.py "she drinks a beer" --metodo cyk --traza
 python scripts/conteos_pda.py
 python scripts/benchmark.py
+python scripts/graficas.py
 python main.py --help
 ```
 
@@ -372,7 +373,23 @@ CYK exclusivo ausente o discrepancia entre métodos. Un límite alcanzado nunca 
 `scripts/benchmark.py` ejecuta PDA y CYK sobre cuatro familias de frases y regenera
 `docs/operaciones.csv` (determinista, sin tiempos); `--salida -` lo imprime en stdout.
 
+El PDF requiere Chrome y Markdown, separado de los reconocedores. Cree un entorno fuera del repo:
+
+```powershell
+python -m venv .venv-docs
+.venv-docs/Scripts/python.exe -m pip install -r requirements-docs.txt
+.venv-docs/Scripts/Activate.ps1
+python scripts/graficas.py
+python scripts/generar_pdf.py
+```
+
+Se generan SVG en `docs/figuras/`, HTML autónomo y `docs/informe.pdf` con Chrome headless.
+Si Chrome está en otra ubicación, use `--chrome RUTA`.
+
 ## Lista de entrega
+
+- Repositorio: [Repositorio del proyecto](https://github.com/DeividArriaza/proyecto2-tdc).
+- Video no listado: [Video de demostración](https://youtu.be/9PlEOdXy-zE).
 
 - [x] Gramática compartida y contratos: `recognizer/__init__.py`, `recognizer/resultado.py`,
   `recognizer/grammar.py`, `docs/acuerdos.md`.

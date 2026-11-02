@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 590" role="img" aria-label="Operaciones por longitud · escala lineal">
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="Segoe UI,Arial,sans-serif" font-size="17" fill="#203040">
+<text x="100" y="35" font-size="25" font-weight="bold">Operaciones por longitud · escala lineal</text>
+<path d="M100,430.00 h810" stroke="#dce2e8"/>
+<text x="90" y="436.00" text-anchor="end">0</text>
+<path d="M100,380.00 h810" stroke="#dce2e8"/>
+<text x="90" y="386.00" text-anchor="end">50 000</text>
+<path d="M100,330.00 h810" stroke="#dce2e8"/>
+<text x="90" y="336.00" text-anchor="end">100 000</text>
+<path d="M100,280.00 h810" stroke="#dce2e8"/>
+<text x="90" y="286.00" text-anchor="end">150 000</text>
+<path d="M100,230.00 h810" stroke="#dce2e8"/>
+<text x="90" y="236.00" text-anchor="end">200 000</text>
+<path d="M100,180.00 h810" stroke="#dce2e8"/>
+<text x="90" y="186.00" text-anchor="end">250 000</text>
+<path d="M100,130.00 h810" stroke="#dce2e8"/>
+<text x="90" y="136.00" text-anchor="end">300 000</text>
+<path d="M100,80.00 h810" stroke="#dce2e8"/>
+<text x="90" y="86.00" text-anchor="end">350 000</text>
+<text x="100.00" y="455" text-anchor="middle">0</text>
+<text x="262.00" y="455" text-anchor="middle">10</text>
+<text x="424.00" y="455" text-anchor="middle">20</text>
+<text x="586.00" y="455" text-anchor="middle">30</text>
+<text x="748.00" y="455" text-anchor="middle">40</text>
+<text x="910.00" y="455" text-anchor="middle">50</text>
+<path d="M100,80 v350 h810" fill="none" stroke="#203040"/>
+<text x="505" y="485" text-anchor="middle">n (palabras)</text>
+<text transform="translate(25,255) rotate(-90)" text-anchor="middle">Operaciones contadas</text>
+<polyline points="164.80,429.70 213.40,428.68 262.00,426.52 310.60,422.83 359.20,417.21 407.80,409.27 456.40,398.61 505.00,384.83 553.60,367.53 602.20,346.33 650.80,320.82 699.40,290.61 748.00,255.31 796.60,214.51 845.20,167.82 893.80,114.85" fill="none" stroke="#176b96" stroke-width="3"/>
+<circle cx="164.80" cy="429.70" r="3" fill="#176b96"/>
+<circle cx="213.40" cy="428.68" r="3" fill="#176b96"/>
+<circle cx="262.00" cy="426.52" r="3" fill="#176b96"/>
+<circle cx="310.60" cy="422.83" r="3" fill="#176b96"/>
+<circle cx="359.20" cy="417.21" r="3" fill="#176b96"/>
+<circle cx="407.80" cy="409.27" r="3" fill="#176b96"/>
+<circle cx="456.40" cy="398.61" r="3" fill="#176b96"/>
+<circle cx="505.00" cy="384.83" r="3" fill="#176b96"/>
+<circle cx="553.60" cy="367.53" r="3" fill="#176b96"/>
+<circle cx="602.20" cy="346.33" r="3" fill="#176b96"/>
+<circle cx="650.80" cy="320.82" r="3" fill="#176b96"/>
+<circle cx="699.40" cy="290.61" r="3" fill="#176b96"/>
+<circle cx="748.00" cy="255.31" r="3" fill="#176b96"/>
+<circle cx="796.60" cy="214.51" r="3" fill="#176b96"/>
+<circle cx="845.20" cy="167.82" r="3" fill="#176b96"/>
+<circle cx="893.80" cy="114.85" r="3" fill="#176b96"/>
+<path d="M110,514 h30" stroke="#176b96" stroke-width="3"/>
+<text x="150" y="520">PDA: símbolos copiados · F</text>
+<polyline points="164.80,429.95 213.40,429.72 262.00,429.18 310.60,428.18 359.20,426.60 407.80,424.30 456.40,421.14 505.00,417.00 553.60,411.73 602.20,405.20 650.80,397.27 699.40,387.82 748.00,376.70 796.60,363.78 845.20,348.93 893.80,332.00" fill="none" stroke="#b14b22" stroke-width="3"/>
+<circle cx="164.80" cy="429.95" r="3" fill="#b14b22"/>
+<circle cx="213.40" cy="429.72" r="3" fill="#b14b22"/>
+<circle cx="262.00" cy="429.18" r="3" fill="#b14b22"/>
+<circle cx="310.60" cy="428.18" r="3" fill="#b14b22"/>
+<circle cx="359.20" cy="426.60" r="3" fill="#b14b22"/>
+<circle cx="407.80" cy="424.30" r="3" fill="#b14b22"/>
+<circle cx="456.40" cy="421.14" r="3" fill="#b14b22"/>
+<circle cx="505.00" cy="417.00" r="3" fill="#b14b22"/>
+<circle cx="553.60" cy="411.73" r="3" fill="#b14b22"/>
+<circle cx="602.20" cy="405.20" r="3" fill="#b14b22"/>
+<circle cx="650.80" cy="397.27" r="3" fill="#b14b22"/>
+<circle cx="699.40" cy="387.82" r="3" fill="#b14b22"/>
+<circle cx="748.00" cy="376.70" r="3" fill="#b14b22"/>
+<circle cx="796.60" cy="363.78" r="3" fill="#b14b22"/>
+<circle cx="845.20" cy="348.93" r="3" fill="#b14b22"/>
+<circle cx="893.80" cy="332.00" r="3" fill="#b14b22"/>
+<path d="M550,514 h30" stroke="#b14b22" stroke-width="3"/>
+<text x="590" y="520">CYK: reglas comprobadas · F</text>
+<polyline points="181.00,429.46 229.60,428.11 278.20,425.48 326.80,421.20 375.40,414.85 424.00,406.04 472.60,394.38 521.20,379.47 569.80,360.92 618.40,338.33 667.00,311.30 715.60,279.43 764.20,242.34 812.80,199.62 861.40,150.88 910.00,95.73" fill="none" stroke="#6248a0" stroke-width="3" stroke-dasharray="8 5"/>
+<circle cx="181.00" cy="429.46" r="3" fill="#6248a0"/>
+<circle cx="229.60" cy="428.11" r="3" fill="#6248a0"/>
+<circle cx="278.20" cy="425.48" r="3" fill="#6248a0"/>
+<circle cx="326.80" cy="421.20" r="3" fill="#6248a0"/>
+<circle cx="375.40" cy="414.85" r="3" fill="#6248a0"/>
+<circle cx="424.00" cy="406.04" r="3" fill="#6248a0"/>
+<circle cx="472.60" cy="394.38" r="3" fill="#6248a0"/>
+<circle cx="521.20" cy="379.47" r="3" fill="#6248a0"/>
+<circle cx="569.80" cy="360.92" r="3" fill="#6248a0"/>
+<circle cx="618.40" cy="338.33" r="3" fill="#6248a0"/>
+<circle cx="667.00" cy="311.30" r="3" fill="#6248a0"/>
+<circle cx="715.60" cy="279.43" r="3" fill="#6248a0"/>
+<circle cx="764.20" cy="242.34" r="3" fill="#6248a0"/>
+<circle cx="812.80" cy="199.62" r="3" fill="#6248a0"/>
+<circle cx="861.40" cy="150.88" r="3" fill="#6248a0"/>
+<circle cx="910.00" cy="95.73" r="3" fill="#6248a0"/>
+<path d="M110,542 h30" stroke="#6248a0" stroke-width="3" stroke-dasharray="8 5"/>
+<text x="150" y="548">PDA: símbolos copiados · R</text>
+<polyline points="181.00,429.90 229.60,429.58 278.20,428.90 326.80,427.73 375.40,425.92 424.00,423.35 472.60,419.88 521.20,415.38 569.80,409.70 618.40,402.72 667.00,394.30 715.60,384.31 764.20,372.60 812.80,359.05 861.40,343.52 910.00,325.88" fill="none" stroke="#24774d" stroke-width="3" stroke-dasharray="8 5"/>
+<circle cx="181.00" cy="429.90" r="3" fill="#24774d"/>
+<circle cx="229.60" cy="429.58" r="3" fill="#24774d"/>
+<circle cx="278.20" cy="428.90" r="3" fill="#24774d"/>
+<circle cx="326.80" cy="427.73" r="3" fill="#24774d"/>
+<circle cx="375.40" cy="425.92" r="3" fill="#24774d"/>
+<circle cx="424.00" cy="423.35" r="3" fill="#24774d"/>
+<circle cx="472.60" cy="419.88" r="3" fill="#24774d"/>
+<circle cx="521.20" cy="415.38" r="3" fill="#24774d"/>
+<circle cx="569.80" cy="409.70" r="3" fill="#24774d"/>
+<circle cx="618.40" cy="402.72" r="3" fill="#24774d"/>
+<circle cx="667.00" cy="394.30" r="3" fill="#24774d"/>
+<circle cx="715.60" cy="384.31" r="3" fill="#24774d"/>
+<circle cx="764.20" cy="372.60" r="3" fill="#24774d"/>
+<circle cx="812.80" cy="359.05" r="3" fill="#24774d"/>
+<circle cx="861.40" cy="343.52" r="3" fill="#24774d"/>
+<circle cx="910.00" cy="325.88" r="3" fill="#24774d"/>
+<path d="M550,542 h30" stroke="#24774d" stroke-width="3" stroke-dasharray="8 5"/>
+<text x="590" y="548">CYK: reglas comprobadas · R</text>
+<text x="100" y="582" font-size="15">F: aceptadas · R: rechazadas con PP incompleto. Las unidades difieren entre métodos.</text>
+</g></svg>

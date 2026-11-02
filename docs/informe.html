@@ -1,0 +1,779 @@
+<!doctype html><html lang="es"><meta charset="utf-8"><title>Proyecto 2 — PDA y CYK</title><style>
+@page {
+  size: A4; margin: 2cm;
+  @bottom-center { content: "Proyecto 2 · TDC  |  " counter(page); font-size: 9pt; color: #526170; }
+}
+@page:first { @bottom-center { content: none; } }
+* { box-sizing: border-box; }
+body { font: 11pt/1.42 "Segoe UI", Arial, sans-serif; color: #172635; margin: 0; }
+h1, h2, h3 { line-height: 1.2; color: #174e70; break-after: avoid; }
+h1 { font-size: 27pt; margin-top: 26mm; }
+h2 { font-size: 18pt; margin: 0 0 8mm; }
+.major { break-before: page; }
+h3 { font-size: 13pt; margin-top: 7mm; }
+p { orphans: 3; widows: 3; }
+table { border-collapse: collapse; width: 100%; font-size: 9pt; margin: 5mm 0; }
+th, td { border: 1px solid #b4c2cb; padding: 2mm; text-align: left; vertical-align: top; }
+th { background: #eaf1f5; }
+thead { display: table-header-group; }
+tr, pre, svg, figure { break-inside: avoid; }
+figure { margin: 0; }
+figure + figure { break-before: page; }
+pre { background: #f1f4f6; padding: 3mm; white-space: pre-wrap; overflow-wrap: anywhere; }
+code { font-family: Consolas, "DejaVu Sans Mono", monospace; font-size: 9pt; }
+td code { font-size: 8pt; overflow-wrap: anywhere; }
+a { color: #174e70; text-decoration: none; overflow-wrap: anywhere; }
+svg { display: block; width: 100%; height: auto; margin: 5mm 0; }
+.toc { break-before: page; break-after: page; }
+.toc h2 { break-before: auto; }
+h3[id^="33-"], h3[id^="62-"] { break-before: page; }
+.toc ul { list-style: none; padding-left: 0; }
+.toc li { margin: 4mm 0; }
+.caption { font-size: 9pt; color: #465968; }
+</style><body><h1 id="proyecto-2-reconocimiento-con-pda-y-cyk">Proyecto 2 — Reconocimiento con PDA y CYK</h1>
+<p>Universidad del Valle de Guatemala · Teoría de la Computación CC2019, sección 30 · Docente: Tomás Gálvez P. · Semestre 2, 2026</p>
+<table>
+<thead>
+<tr>
+<th>Integrante</th>
+<th>Carné</th>
+<th>Responsabilidad principal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>David López</td>
+<td>24730</td>
+<td>PDA, extensión del proyecto 1, consola, repositorio</td>
+</tr>
+<tr>
+<td>Carlos López</td>
+<td>24531</td>
+<td>CYK, integración, experimentos, comparación, informe, video</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Repositorio (privado): <a href="https://github.com/DeividArriaza/proyecto2-tdc">Repositorio del proyecto</a></li>
+<li>Video (YouTube, no listado, ≤ 10 min): <a href="https://youtu.be/9PlEOdXy-zE">Video de demostración</a></li>
+</ul>
+<p>Informe final · Noviembre de 2026</p>
+<div class="toc"><h2>Índice</h2>
+<ul>
+<li><a href="#1-objetivo">1. Objetivo</a></li>
+<li><a href="#2-la-gramatica-g">2. La gramática G</a></li>
+<li><a href="#3-pda-a-partir-de-g">3. PDA a partir de G</a><ul>
+<li><a href="#31-extension-del-automata-del-proyecto-1">3.1 Extensión del autómata del proyecto 1</a></li>
+<li><a href="#32-definicion-formal">3.2 Definición formal</a></li>
+<li><a href="#33-simulacion-y-evidencia">3.3 Simulación y evidencia</a></li>
+</ul>
+</li>
+<li><a href="#4-algoritmo-cyk">4. Algoritmo CYK</a></li>
+<li><a href="#5-ejecucion">5. Ejecución</a></li>
+<li><a href="#6-tasas-de-crecimiento">6. Tasas de crecimiento</a><ul>
+<li><a href="#61-cyk-desglose-y-cota-ajustada">6.1 CYK: desglose y cota ajustada</a></li>
+<li><a href="#62-pda-cota-exponencial-en-general-polinomial-en-g">6.2 PDA: cota exponencial en general, polinomial en G</a></li>
+</ul>
+</li>
+<li><a href="#7-experimentos-reproducibles">7. Experimentos reproducibles</a><ul>
+<li><a href="#71-graficas-del-conteo-dominante">7.1 Gráficas del conteo dominante</a></li>
+</ul>
+</li>
+<li><a href="#8-discusion-de-desempenos">8. Discusión de desempeños</a></li>
+<li><a href="#9-validacion">9. Validación</a></li>
+<li><a href="#10-referencias">10. Referencias</a></li>
+</ul>
+</div>
+<h2 id="1-objetivo">1. Objetivo</h2>
+<p>Reconocer frases del lenguaje de la gramática G del enunciado con dos métodos independientes:
+un autómata de pila (PDA) obtenido de G, que extiende el autómata del proyecto 1, y el algoritmo
+CYK. Ambos registran los pasos que justifican su respuesta. Además se calcula la tasa de
+crecimiento de cada programa mediante conteo de operaciones y se comparan sus desempeños.</p>
+<h2 id="2-la-gramatica-g">2. La gramática G</h2>
+<p>G = (V_G, Σ, S, R), con V_G = {S, VP, PP, NP, V, P, N, Det} y Σ = {cooks, drinks, eats, cuts, he, she,
+in, with, a, the, cat, dog, beer, cake, juice, meat, soup, fork, knife, oven, spoon}.</p>
+<pre><code class="language-text">S  → NP VP              PP  → P NP              V   → cooks | drinks | eats | cuts
+VP → VP PP | V NP       NP  → Det N | he | she  P   → in | with
+VP → cooks | drinks | eats | cuts               Det → a | the
+N  → cat | dog | beer | cake | juice | meat | soup | fork | knife | oven | spoon
+</code></pre>
+<p>8 variables, 21 terminales y 30 alternativas (5 binarias, 25 léxicas). G ya está en CNF.
+Está definida una sola vez en <code>recognizer/grammar.py</code> y la usan ambos reconocedores; las pruebas
+comparan esa definición con el enunciado. <strong>Entrada:</strong> cada palabra separada por espacios en blanco
+es un token y n es la cantidad de palabras. No se cambian mayúsculas ni puntuación: <code>He cooks</code> y
+<code>he cooks.</code> se rechazan. La cadena vacía se rechaza porque G no deriva ε.</p>
+<h2 class="major" id="3-pda-a-partir-de-g">3. PDA a partir de G</h2>
+<h3 id="31-extension-del-automata-del-proyecto-1">3.1 Extensión del autómata del proyecto 1</h3>
+<p>El modelo AFN del proyecto 1 se reutiliza con imports relativos y comentarios de procedencia en <code>recognizer/proyecto1/</code> (commit <code>750243e</code>
+de <code>primer-proyecto-tdc</code>). <code>AutomataPila</code> en <code>recognizer/automata.py</code> <strong>hereda</strong> de esa clase y
+agrega alfabeto de pila Γ, símbolo de fondo Z0 y transiciones <code>(estado, lectura|ε, cima) →
+{(destino, secuencia_a_apilar)}</code>. La pila es una tupla con la cima en el índice 0; reemplazar la cima
+por <code>()</code> desapila. EPSILON se toma del proyecto 1.</p>
+<h3 id="32-definicion-formal">3.2 Definición formal</h3>
+<p>M = (Q, Σ, Γ, δ, q0, Z0, F) con Q = {q0, q1, q2}, Γ = V_G ∪ Σ ∪ {Z0}, F = {q2} y:</p>
+<ol>
+<li>δ(q0, ε, Z0) = {(q1, S Z0)} — inicialización.</li>
+<li>Para cada A → α en R: (q1, α) ∈ δ(q1, ε, A) — expansión de variables.</li>
+<li>Para cada a ∈ Σ: δ(q1, a, a) = {(q1, ε)} — coincidencia de terminales.</li>
+<li>δ(q1, ε, Z0) = {(q2, Z0)} — finalización.</li>
+</ol>
+<p>Acepta por estado final con toda la entrada consumida. Invariante: en q1, si se leyó el prefijo u y
+la pila contiene β Z0, entonces S ⇒* uβ por una derivación izquierda; al aceptar, β = ε y S ⇒* w. Por tanto L(M) ⊆ L(G). Recíprocamente, cada
+derivación izquierda de una palabra de G se simula mediante las expansiones de su variable
+izquierda y la lectura de los terminales resultantes, hasta quedar Z0 y habilitar q2.
+Así L(G) ⊆ L(M) y L(M) = L(G). Es la construcción estándar CFG a PDA de HMU y Sipser;
+las <a href="https://www3.cs.stonybrook.edu/~cse350/slides/pda2.pdf">notas de Stony Brook</a>
+presentan esta misma estrategia de derivación izquierda.</p>
+<p>Formalmente δ: Q × (Σ ∪ {ε}) × Γ → ℘(Q × Γ*); los casos no enumerados tienen
+conjunto de destinos vacío. La pila inicial es Z0 y su cima se escribe a la izquierda.
+En q2 queda el fondo: se acepta por estado final, no por vaciar la pila.</p>
+<h3 id="33-simulacion-y-evidencia">3.3 Simulación y evidencia</h3>
+<p>El algoritmo mantiene una cola con la configuración inicial (q0, 0, (Z0,)). Antes de expandir
+el frente comprueba aceptación y después el límite opcional. Para cada configuración extraída
+consulta las transiciones ε y, si queda entrada, las del siguiente token. Cada destino crea
+<code>apilar + pila[1:]</code>; la posición avanza solo con lectura. Primero aplica la poda, después
+descarta visitadas y finalmente guarda el padre, la transición y el sucesor en la cola.
+Si la cola se vacía devuelve rechazo. El límite cuenta expansiones y produce <strong>inconclusa</strong>.
+La poda se activa automáticamente solo en autómatas certificados por la construcción sin
+producciones vacías; en un PDA externo no se presume válida y no se garantiza terminación.</p>
+<p><code>recognizer/pda.py</code> ejecuta cualquier <code>AutomataPila</code> con búsqueda en anchura (BFS) sobre
+configuraciones (estado, posición, pila completa) y un conjunto de visitadas. Como G no tiene reglas
+vacías, cada símbolo sobre el fondo debe consumir al menos una palabra; una configuración con más
+símbolos pendientes que palabras restantes se poda con seguridad. Esto garantiza terminación a pesar
+de la recursión izquierda VP → VP PP. La evidencia contiene todas las configuraciones exploradas
+con su padre y transición, el recorrido aceptante validado o la causa del agotamiento.</p>
+<table>
+<thead>
+<tr>
+<th>Paso</th>
+<th>Descripción instantánea</th>
+<th>Acción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>(q0, he cooks, Z0)</td>
+<td>Inicio</td>
+</tr>
+<tr>
+<td>1</td>
+<td>(q1, he cooks, S Z0)</td>
+<td>Inicializar</td>
+</tr>
+<tr>
+<td>2</td>
+<td>(q1, he cooks, NP VP Z0)</td>
+<td>S → NP VP</td>
+</tr>
+<tr>
+<td>3</td>
+<td>(q1, he cooks, he VP Z0)</td>
+<td>NP → he</td>
+</tr>
+<tr>
+<td>4</td>
+<td>(q1, cooks, VP Z0)</td>
+<td>Leer he</td>
+</tr>
+<tr>
+<td>5</td>
+<td>(q1, cooks, cooks Z0)</td>
+<td>VP → cooks</td>
+</tr>
+<tr>
+<td>6</td>
+<td>(q1, ε, Z0)</td>
+<td>Leer cooks</td>
+</tr>
+<tr>
+<td>7</td>
+<td>(q2, ε, Z0)</td>
+<td>Finalizar</td>
+</tr>
+</tbody>
+</table>
+<p>Cada fila se relaciona con la siguiente por ⊢. Esta es la ruta aceptante reconstruida, no toda
+la exploración BFS: <code>he cooks</code> genera 15 configuraciones, expande 11, evalúa 14 transiciones,
+realiza 21 consultas, copia 50 símbolos y poda 3 candidatas; no encuentra repetidas.</p>
+<h2 class="major" id="4-algoritmo-cyk">4. Algoritmo CYK</h2>
+<p>T[i, l] es el conjunto de variables que derivan las l palabras desde la posición i. La base usa las
+reglas léxicas; para l = 2..n, cada corte c combina T[i, c] y T[i+c, l−c] con las reglas A → B C.
+Se acepta si S ∈ T[0, n]. Cada variable guarda su primer testigo (producción, corte), con lo cual se
+reconstruye un árbol y la derivación izquierda. Ejemplo <code>she drinks a beer</code>:</p>
+<pre><code class="language-text">l=4 | S
+l=3 | ∅       VP
+l=2 | S       ∅       NP
+l=1 | NP      V,VP    Det     N
+      she     drinks  a       beer
+</code></pre>
+<p>S ⇒ NP VP ⇒ she VP ⇒ she V NP ⇒ she drinks NP ⇒ she drinks Det N ⇒ she drinks a N ⇒ she drinks a beer.
+En un rechazo (<code>he eats cake</code>) la tabla completa muestra que S no está en la celda final.</p>
+<h2 class="major" id="5-ejecucion">5. Ejecución</h2>
+<p>Python ≥ 3.10 para los reconocedores, con biblioteca estándar; verificado con Python 3.14.
+No se requiere instalar paquetes para reconocer ni ejecutar las pruebas. Desde la raíz del repositorio:</p>
+<pre><code class="language-powershell">python main.py &quot;she drinks a beer&quot; --traza                 # PDA y CYK, con pasos
+python main.py &quot;he eats cake&quot; --metodo cyk --traza         # solo CYK
+python main.py &quot;he cooks&quot; --json salidas/resultado.json    # evidencia completa en JSON
+python -m unittest discover -s tests -v                    # todas las pruebas
+python scripts/conteos_pda.py                              # ocho casos del PDA
+python scripts/benchmark.py                                # regenera docs/operaciones.csv
+python scripts/graficas.py                                 # genera SVG sin dependencias
+</code></pre>
+<p>Códigos de salida: 0 aceptada, 1 rechazada, 2 inconclusa, error o discrepancia entre métodos.</p>
+<p>Para generar el documento se necesita Chrome y la dependencia separada de <code>requirements-docs.txt</code>.
+En PowerShell, el entorno de documentación se crea fuera del repositorio:</p>
+<pre><code class="language-powershell">python -m venv ../_coord-proyecto2/venv-docs
+../_coord-proyecto2/venv-docs/Scripts/python.exe -m pip install -r requirements-docs.txt
+../_coord-proyecto2/venv-docs/Scripts/python.exe scripts/generar_pdf.py
+</code></pre>
+<p>El comando habitual, con ese entorno activo, es <code>python scripts/generar_pdf.py</code>.
+Se producen <code>docs/informe.html</code> autónomo y <code>docs/informe.pdf</code>. El script busca Chrome en
+su ruta estándar de Windows; permite <code>--chrome RUTA</code> o la variable <code>CHROME_PATH</code>.
+No se requiere conexión a Internet al imprimir: las figuras se embeben en el HTML.</p>
+<h2 class="major" id="6-tasas-de-crecimiento">6. Tasas de crecimiento</h2>
+<h3 id="61-cyk-desglose-y-cota-ajustada">6.1 CYK: desglose y cota ajustada</h3>
+<p>Con R_bin = 5 y R_lex = 25 reglas, los bucles recorren todas las celdas, cortes y reglas sin salidas
+tempranas:</p>
+<table>
+<thead>
+<tr>
+<th>Operación</th>
+<th>Conteo exacto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Celdas</td>
+<td>n(n+1)/2</td>
+</tr>
+<tr>
+<td>Consultas léxicas</td>
+<td>25n</td>
+</tr>
+<tr>
+<td>Cortes</td>
+<td>Σ_{l=2..n} (n−l+1)(l−1) = (n³ − n)/6</td>
+</tr>
+<tr>
+<td>Comprobaciones de reglas binarias</td>
+<td>5(n³ − n)/6</td>
+</tr>
+</tbody>
+</table>
+<p>Con j = l−1, el conteo de cortes se obtiene de:</p>
+<p class="formula">∑<sub>j=0</sub><sup>n−1</sup> (n−j)j =
+n · n(n−1)/2 − (n−1)n(2n−1)/6 = (n³−n)/6.</p>
+
+<p>La suma seleccionada C(n) = 5(n³−n)/6 + 25n + n(n+1)/2 pertenece a <strong>Θ(n³)</strong>.
+No es el total de instrucciones ni la suma de todos los contadores: excluye, entre otras,
+las altas de variables y la reconstrucción. Los tres bucles de longitud, inicio y corte,
+más el recorrido completo de reglas binarias, justifican una cota ajustada para G.
+Las consultas a diccionarios se consideran O(1) esperado. El <code>and</code> de Python puede omitir
+la segunda consulta cuando falla la primera; las comprobaciones contadas sí son exactas.</p>
+<p>Para gramática variable, el llenado cuesta
+Θ(n² + n·|R_lex| + n³·|R_bin|), con n ≥ 2. La forma convencional
+<strong>O(n³·|G|)</strong> es una cota superior; es <strong>Θ(n³·|G|)</strong> cuando |R_bin| = Θ(|G|),
+como en G fija. No es una igualdad ajustada uniforme para una gramática dominada por reglas
+léxicas. La validación y ordenación inicial de reglas añade O(|G| log |G|) como cota superior.
+Para G esos costos son constantes.</p>
+<p>La tabla ocupa Θ(n²) celdas con hasta 8 variables y testigos cada una. El árbol ocupa Θ(n);
+la lista explícita de formas de la derivación y su reconstrucción requieren O(n²).
+Esto sigue dominado por Θ(n³) en entradas largas de G. Para n = 0 todos los contadores
+son cero y se rechaza sin tabla.</p>
+<h3 id="62-pda-cota-exponencial-en-general-polinomial-en-g">6.2 PDA: cota exponencial en general, polinomial en G</h3>
+<p>Operación dominante elegida por David: símbolos de pila copiados al construir cada sucesor.
+Para una CFG fija sin ε con poda, el número de configuraciones está acotado por O(n·g^(n+1)), con
+g = |Γ|, de donde se obtiene una cota superior exponencial O(n²·g^(n+1)). Para <strong>G</strong> toda pila
+alcanzable tiene la forma β PP^k Z0, con β en un conjunto finito y 0 ≤ k ≤ n; hay O(n) pilas y
+O(n²) configuraciones. Cotas superiores para G: <strong>O(n²) transiciones evaluadas</strong> y <strong>O(n³) símbolos
+copiados</strong> (y memoria O(n³), porque se guardan las pilas completas como evidencia).
+Las cotas anteriores son <strong>superiores</strong>, no tasas Θ demostradas. Suponen gramática fija,
+ramificación constante y consultas hash amortizadas. En general,
+C ≤ |Q|(n+1)∑<sub>h=0</sub><sup>n+1</sup>g<sup>h</sup> configuraciones;
+cada una genera O(1) sucesores y cada pila cuesta O(n) al copiarse. Para G, la forma
+β PP<sup>k</sup> Z0 reduce a O(n) las pilas posibles. β pertenece a un conjunto finito:
+VP, V NP, verbo NP, verbo, NP, Det N, determinante N, N, sustantivo, P NP,
+preposición NP, pronombre o ε; las etapas del sujeto también forman un conjunto constante.
+Multiplicar por las O(n) posiciones da O(n²) configuraciones y por O(n) de copia da O(n³).</p>
+<p>En CNF, n reglas léxicas y n−1 binarias producen 2n−1 expansiones; al sumar n lecturas
+y dos pasos administrativos, cualquier ruta aceptante tiene <strong>3n+1 transiciones</strong>.
+Esto no hace lineal a <code>validar_recorrido</code>: compara las pilas explícitas antes y después,
+por lo que su costo es O(suma de longitudes de pila), a lo sumo O(n²), además de recibir
+el recorrido. Buscar la ruta con BFS tiene los costos superiores ya derivados.</p>
+<table>
+<thead>
+<tr>
+<th>Contador PDA</th>
+<th>Qué mide</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>configuraciones_generadas</code></td>
+<td>Inicial más cada candidata, aun podada o repetida</td>
+</tr>
+<tr>
+<td><code>configuraciones_expandidas</code></td>
+<td>Configuraciones retiradas para buscar sucesores</td>
+</tr>
+<tr>
+<td><code>consultas_transiciones</code></td>
+<td>Búsquedas en δ, para ε y siguiente token disponible</td>
+</tr>
+<tr>
+<td><code>transiciones_evaluadas</code></td>
+<td>Destinos examinados de esas consultas</td>
+</tr>
+<tr>
+<td><code>simbolos_copiados_pila</code></td>
+<td>1 inicial + suma de (longitud anterior−1 + longitud nueva)</td>
+</tr>
+<tr>
+<td><code>podas</code>, <code>repetidas</code></td>
+<td>Candidatas descartadas por longitud o ya visitadas</td>
+</tr>
+</tbody>
+</table>
+<p>Las copias cuentan referencias de la cola de la tupla y su concatenación. No incluyen todas
+las copias del registro ni el costo exacto de hash: miden el crecimiento de la representación.
+Se cumple generadas = 1 + transiciones evaluadas. CYK cuenta además <code>reglas_satisfechas</code>
+(coincidencias léxicas/binarias) y <code>variables_agregadas</code> (primer testigo en cada celda).</p>
+<h2 class="major" id="7-experimentos-reproducibles">7. Experimentos reproducibles</h2>
+<p><code>scripts/benchmark.py</code> ejecuta ambos métodos sin límite de búsqueda y escribe <code>docs/operaciones.csv</code>
+(40 filas, determinista; no mide tiempos). Familias, con F_k = <code>she eats the cake</code> + k veces
+<code>with a fork</code> (n = 3k + 4):</p>
+<table>
+<thead>
+<tr>
+<th>Familia</th>
+<th>Frase</th>
+<th>k</th>
+<th>Decisión</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F</td>
+<td>F_k</td>
+<td>0..15</td>
+<td>aceptada</td>
+</tr>
+<tr>
+<td>R</td>
+<td>F_k + <code>with</code> (PP incompleto)</td>
+<td>0..15</td>
+<td>rechazada</td>
+</tr>
+<tr>
+<td>E</td>
+<td><code>cooks</code> + F_k (orden inválido desde el inicio)</td>
+<td>0, 5, 10, 15</td>
+<td>rechazada</td>
+</tr>
+<tr>
+<td>D</td>
+<td>F_k + <code>dances</code> (palabra fuera de Σ)</td>
+<td>0, 5, 10, 15</td>
+<td>rechazada</td>
+</tr>
+</tbody>
+</table>
+<p>Columnas: <code>pda_*</code> son los contadores de <code>docs/pda.md</code>; <code>cyk_*</code> los de <code>docs/cyk.md</code>;
+<code>pda_causa</code> indica <code>frontera_agotada</code> o <code>fuera_del_alfabeto</code>; <code>pda_limite</code> vacío significa que no
+hubo límite y, por tanto, ningún resultado es inconcluso. <code>coinciden</code> es <code>True</code> en las 40 filas.</p>
+<table>
+<thead>
+<tr>
+<th>n</th>
+<th>PDA transiciones</th>
+<th>PDA copias de pila</th>
+<th>CYK comprobaciones</th>
+<th>CYK variables agregadas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4 (F_0)</td>
+<td>66</td>
+<td>304</td>
+<td>50</td>
+<td>9</td>
+</tr>
+<tr>
+<td>7 (F_1)</td>
+<td>196</td>
+<td>1 323</td>
+<td>280</td>
+<td>16</td>
+</tr>
+<tr>
+<td>19 (F_5)</td>
+<td>1 376</td>
+<td>20 729</td>
+<td>5 700</td>
+<td>44</td>
+</tr>
+<tr>
+<td>34 (F_10)</td>
+<td>4 336</td>
+<td>109 179</td>
+<td>32 725</td>
+<td>79</td>
+</tr>
+<tr>
+<td>49 (F_15)</td>
+<td>8 946</td>
+<td>315 154</td>
+<td>98 000</td>
+<td>114</td>
+</tr>
+<tr>
+<td>50 (R_15)</td>
+<td>9 310</td>
+<td>334 274</td>
+<td>104 125</td>
+<td>115</td>
+</tr>
+<tr>
+<td>50 (E_15)</td>
+<td>7</td>
+<td>37</td>
+<td>104 125</td>
+<td>117</td>
+</tr>
+<tr>
+<td>50 (D_15)</td>
+<td>0</td>
+<td>0</td>
+<td>104 125</td>
+<td>114</td>
+</tr>
+</tbody>
+</table>
+<p>En las 16 filas de F, los conteos coinciden exactamente con estos polinomios (y análogos en R):</p>
+<ul>
+<li>PDA, transiciones evaluadas: (11/3)n² + 3n − 14/3.</li>
+<li>PDA, símbolos copiados: (22/9)n³ + (71/6)n² − (107/6)n + 266/9.</li>
+<li>CYK, comprobaciones binarias: (5/6)(n³ − n), igual que la fórmula analítica.</li>
+</ul>
+<h3 id="71-graficas-del-conteo-dominante">7.1 Gráficas del conteo dominante</h3>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 590" role="img" aria-label="Operaciones por longitud · escala lineal">
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="Segoe UI,Arial,sans-serif" font-size="17" fill="#203040">
+<text x="100" y="35" font-size="25" font-weight="bold">Operaciones por longitud · escala lineal</text>
+<path d="M100,430.00 h810" stroke="#dce2e8"/>
+<text x="90" y="436.00" text-anchor="end">0</text>
+<path d="M100,380.00 h810" stroke="#dce2e8"/>
+<text x="90" y="386.00" text-anchor="end">50 000</text>
+<path d="M100,330.00 h810" stroke="#dce2e8"/>
+<text x="90" y="336.00" text-anchor="end">100 000</text>
+<path d="M100,280.00 h810" stroke="#dce2e8"/>
+<text x="90" y="286.00" text-anchor="end">150 000</text>
+<path d="M100,230.00 h810" stroke="#dce2e8"/>
+<text x="90" y="236.00" text-anchor="end">200 000</text>
+<path d="M100,180.00 h810" stroke="#dce2e8"/>
+<text x="90" y="186.00" text-anchor="end">250 000</text>
+<path d="M100,130.00 h810" stroke="#dce2e8"/>
+<text x="90" y="136.00" text-anchor="end">300 000</text>
+<path d="M100,80.00 h810" stroke="#dce2e8"/>
+<text x="90" y="86.00" text-anchor="end">350 000</text>
+<text x="100.00" y="455" text-anchor="middle">0</text>
+<text x="262.00" y="455" text-anchor="middle">10</text>
+<text x="424.00" y="455" text-anchor="middle">20</text>
+<text x="586.00" y="455" text-anchor="middle">30</text>
+<text x="748.00" y="455" text-anchor="middle">40</text>
+<text x="910.00" y="455" text-anchor="middle">50</text>
+<path d="M100,80 v350 h810" fill="none" stroke="#203040"/>
+<text x="505" y="485" text-anchor="middle">n (palabras)</text>
+<text transform="translate(25,255) rotate(-90)" text-anchor="middle">Operaciones contadas</text>
+<polyline points="164.80,429.70 213.40,428.68 262.00,426.52 310.60,422.83 359.20,417.21 407.80,409.27 456.40,398.61 505.00,384.83 553.60,367.53 602.20,346.33 650.80,320.82 699.40,290.61 748.00,255.31 796.60,214.51 845.20,167.82 893.80,114.85" fill="none" stroke="#176b96" stroke-width="3"/>
+<circle cx="164.80" cy="429.70" r="3" fill="#176b96"/>
+<circle cx="213.40" cy="428.68" r="3" fill="#176b96"/>
+<circle cx="262.00" cy="426.52" r="3" fill="#176b96"/>
+<circle cx="310.60" cy="422.83" r="3" fill="#176b96"/>
+<circle cx="359.20" cy="417.21" r="3" fill="#176b96"/>
+<circle cx="407.80" cy="409.27" r="3" fill="#176b96"/>
+<circle cx="456.40" cy="398.61" r="3" fill="#176b96"/>
+<circle cx="505.00" cy="384.83" r="3" fill="#176b96"/>
+<circle cx="553.60" cy="367.53" r="3" fill="#176b96"/>
+<circle cx="602.20" cy="346.33" r="3" fill="#176b96"/>
+<circle cx="650.80" cy="320.82" r="3" fill="#176b96"/>
+<circle cx="699.40" cy="290.61" r="3" fill="#176b96"/>
+<circle cx="748.00" cy="255.31" r="3" fill="#176b96"/>
+<circle cx="796.60" cy="214.51" r="3" fill="#176b96"/>
+<circle cx="845.20" cy="167.82" r="3" fill="#176b96"/>
+<circle cx="893.80" cy="114.85" r="3" fill="#176b96"/>
+<path d="M110,514 h30" stroke="#176b96" stroke-width="3"/>
+<text x="150" y="520">PDA: símbolos copiados · F</text>
+<polyline points="164.80,429.95 213.40,429.72 262.00,429.18 310.60,428.18 359.20,426.60 407.80,424.30 456.40,421.14 505.00,417.00 553.60,411.73 602.20,405.20 650.80,397.27 699.40,387.82 748.00,376.70 796.60,363.78 845.20,348.93 893.80,332.00" fill="none" stroke="#b14b22" stroke-width="3"/>
+<circle cx="164.80" cy="429.95" r="3" fill="#b14b22"/>
+<circle cx="213.40" cy="429.72" r="3" fill="#b14b22"/>
+<circle cx="262.00" cy="429.18" r="3" fill="#b14b22"/>
+<circle cx="310.60" cy="428.18" r="3" fill="#b14b22"/>
+<circle cx="359.20" cy="426.60" r="3" fill="#b14b22"/>
+<circle cx="407.80" cy="424.30" r="3" fill="#b14b22"/>
+<circle cx="456.40" cy="421.14" r="3" fill="#b14b22"/>
+<circle cx="505.00" cy="417.00" r="3" fill="#b14b22"/>
+<circle cx="553.60" cy="411.73" r="3" fill="#b14b22"/>
+<circle cx="602.20" cy="405.20" r="3" fill="#b14b22"/>
+<circle cx="650.80" cy="397.27" r="3" fill="#b14b22"/>
+<circle cx="699.40" cy="387.82" r="3" fill="#b14b22"/>
+<circle cx="748.00" cy="376.70" r="3" fill="#b14b22"/>
+<circle cx="796.60" cy="363.78" r="3" fill="#b14b22"/>
+<circle cx="845.20" cy="348.93" r="3" fill="#b14b22"/>
+<circle cx="893.80" cy="332.00" r="3" fill="#b14b22"/>
+<path d="M550,514 h30" stroke="#b14b22" stroke-width="3"/>
+<text x="590" y="520">CYK: reglas comprobadas · F</text>
+<polyline points="181.00,429.46 229.60,428.11 278.20,425.48 326.80,421.20 375.40,414.85 424.00,406.04 472.60,394.38 521.20,379.47 569.80,360.92 618.40,338.33 667.00,311.30 715.60,279.43 764.20,242.34 812.80,199.62 861.40,150.88 910.00,95.73" fill="none" stroke="#6248a0" stroke-width="3" stroke-dasharray="8 5"/>
+<circle cx="181.00" cy="429.46" r="3" fill="#6248a0"/>
+<circle cx="229.60" cy="428.11" r="3" fill="#6248a0"/>
+<circle cx="278.20" cy="425.48" r="3" fill="#6248a0"/>
+<circle cx="326.80" cy="421.20" r="3" fill="#6248a0"/>
+<circle cx="375.40" cy="414.85" r="3" fill="#6248a0"/>
+<circle cx="424.00" cy="406.04" r="3" fill="#6248a0"/>
+<circle cx="472.60" cy="394.38" r="3" fill="#6248a0"/>
+<circle cx="521.20" cy="379.47" r="3" fill="#6248a0"/>
+<circle cx="569.80" cy="360.92" r="3" fill="#6248a0"/>
+<circle cx="618.40" cy="338.33" r="3" fill="#6248a0"/>
+<circle cx="667.00" cy="311.30" r="3" fill="#6248a0"/>
+<circle cx="715.60" cy="279.43" r="3" fill="#6248a0"/>
+<circle cx="764.20" cy="242.34" r="3" fill="#6248a0"/>
+<circle cx="812.80" cy="199.62" r="3" fill="#6248a0"/>
+<circle cx="861.40" cy="150.88" r="3" fill="#6248a0"/>
+<circle cx="910.00" cy="95.73" r="3" fill="#6248a0"/>
+<path d="M110,542 h30" stroke="#6248a0" stroke-width="3" stroke-dasharray="8 5"/>
+<text x="150" y="548">PDA: símbolos copiados · R</text>
+<polyline points="181.00,429.90 229.60,429.58 278.20,428.90 326.80,427.73 375.40,425.92 424.00,423.35 472.60,419.88 521.20,415.38 569.80,409.70 618.40,402.72 667.00,394.30 715.60,384.31 764.20,372.60 812.80,359.05 861.40,343.52 910.00,325.88" fill="none" stroke="#24774d" stroke-width="3" stroke-dasharray="8 5"/>
+<circle cx="181.00" cy="429.90" r="3" fill="#24774d"/>
+<circle cx="229.60" cy="429.58" r="3" fill="#24774d"/>
+<circle cx="278.20" cy="428.90" r="3" fill="#24774d"/>
+<circle cx="326.80" cy="427.73" r="3" fill="#24774d"/>
+<circle cx="375.40" cy="425.92" r="3" fill="#24774d"/>
+<circle cx="424.00" cy="423.35" r="3" fill="#24774d"/>
+<circle cx="472.60" cy="419.88" r="3" fill="#24774d"/>
+<circle cx="521.20" cy="415.38" r="3" fill="#24774d"/>
+<circle cx="569.80" cy="409.70" r="3" fill="#24774d"/>
+<circle cx="618.40" cy="402.72" r="3" fill="#24774d"/>
+<circle cx="667.00" cy="394.30" r="3" fill="#24774d"/>
+<circle cx="715.60" cy="384.31" r="3" fill="#24774d"/>
+<circle cx="764.20" cy="372.60" r="3" fill="#24774d"/>
+<circle cx="812.80" cy="359.05" r="3" fill="#24774d"/>
+<circle cx="861.40" cy="343.52" r="3" fill="#24774d"/>
+<circle cx="910.00" cy="325.88" r="3" fill="#24774d"/>
+<path d="M550,542 h30" stroke="#24774d" stroke-width="3" stroke-dasharray="8 5"/>
+<text x="590" y="548">CYK: reglas comprobadas · R</text>
+<text x="100" y="582" font-size="15">F: aceptadas · R: rechazadas con PP incompleto. Las unidades difieren entre métodos.</text>
+</g></svg>
+<figcaption class="caption">Figura 1. Conteos del CSV para F (aceptadas) y R (rechazadas). Se usan las copias de
+símbolos del PDA y las comprobaciones binarias de CYK. Las operaciones de distintos programas
+no cuestan lo mismo; la altura de las curvas no equivale a una comparación de segundos.</figcaption></figure>
+<figure><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 590" role="img" aria-label="Operaciones por longitud · escala log–log">
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="Segoe UI,Arial,sans-serif" font-size="17" fill="#203040">
+<text x="100" y="35" font-size="25" font-weight="bold">Operaciones por longitud · escala log–log</text>
+<path d="M100,430.00 h810" stroke="#dce2e8"/>
+<text x="90" y="436.00" text-anchor="end">10^0</text>
+<path d="M100,371.67 h810" stroke="#dce2e8"/>
+<text x="90" y="377.67" text-anchor="end">10^1</text>
+<path d="M100,313.33 h810" stroke="#dce2e8"/>
+<text x="90" y="319.33" text-anchor="end">10^2</text>
+<path d="M100,255.00 h810" stroke="#dce2e8"/>
+<text x="90" y="261.00" text-anchor="end">10^3</text>
+<path d="M100,196.67 h810" stroke="#dce2e8"/>
+<text x="90" y="202.67" text-anchor="end">10^4</text>
+<path d="M100,138.33 h810" stroke="#dce2e8"/>
+<text x="90" y="144.33" text-anchor="end">10^5</text>
+<path d="M100,80.00 h810" stroke="#dce2e8"/>
+<text x="90" y="86.00" text-anchor="end">10^6</text>
+<text x="100.00" y="455" text-anchor="middle">4</text>
+<text x="279.47" y="455" text-anchor="middle">7</text>
+<text x="393.85" y="455" text-anchor="middle">10</text>
+<text x="616.15" y="455" text-anchor="middle">20</text>
+<text x="746.18" y="455" text-anchor="middle">30</text>
+<text x="910.00" y="455" text-anchor="middle">50</text>
+<path d="M100,80 v350 h810" fill="none" stroke="#203040"/>
+<text x="505" y="485" text-anchor="middle">n (palabras)</text>
+<text transform="translate(25,255) rotate(-90)" text-anchor="middle">Operaciones contadas</text>
+<polyline points="100.00,285.17 279.47,247.91 393.85,223.42 477.99,205.10 544.58,190.44 599.70,178.20 646.71,167.68 687.71,158.46 724.05,150.25 756.69,142.85 786.32,136.11 813.44,129.92 838.44,124.20 861.63,118.88 883.26,113.91 903.52,109.25" fill="none" stroke="#176b96" stroke-width="3"/>
+<circle cx="100.00" cy="285.17" r="3" fill="#176b96"/>
+<circle cx="279.47" cy="247.91" r="3" fill="#176b96"/>
+<circle cx="393.85" cy="223.42" r="3" fill="#176b96"/>
+<circle cx="477.99" cy="205.10" r="3" fill="#176b96"/>
+<circle cx="544.58" cy="190.44" r="3" fill="#176b96"/>
+<circle cx="599.70" cy="178.20" r="3" fill="#176b96"/>
+<circle cx="646.71" cy="167.68" r="3" fill="#176b96"/>
+<circle cx="687.71" cy="158.46" r="3" fill="#176b96"/>
+<circle cx="724.05" cy="150.25" r="3" fill="#176b96"/>
+<circle cx="756.69" cy="142.85" r="3" fill="#176b96"/>
+<circle cx="786.32" cy="136.11" r="3" fill="#176b96"/>
+<circle cx="813.44" cy="129.92" r="3" fill="#176b96"/>
+<circle cx="838.44" cy="124.20" r="3" fill="#176b96"/>
+<circle cx="861.63" cy="118.88" r="3" fill="#176b96"/>
+<circle cx="883.26" cy="113.91" r="3" fill="#176b96"/>
+<circle cx="903.52" cy="109.25" r="3" fill="#176b96"/>
+<path d="M110,514 h30" stroke="#176b96" stroke-width="3"/>
+<text x="150" y="520">PDA: símbolos copiados · F</text>
+<polyline points="100.00,330.89 279.47,287.25 393.85,259.87 477.99,239.83 544.58,224.00 599.70,210.91 646.71,199.75 687.71,190.02 724.05,181.40 756.69,173.66 786.32,166.63 813.44,160.20 838.44,154.27 861.63,148.78 883.26,143.65 903.52,138.85" fill="none" stroke="#b14b22" stroke-width="3"/>
+<circle cx="100.00" cy="330.89" r="3" fill="#b14b22"/>
+<circle cx="279.47" cy="287.25" r="3" fill="#b14b22"/>
+<circle cx="393.85" cy="259.87" r="3" fill="#b14b22"/>
+<circle cx="477.99" cy="239.83" r="3" fill="#b14b22"/>
+<circle cx="544.58" cy="224.00" r="3" fill="#b14b22"/>
+<circle cx="599.70" cy="210.91" r="3" fill="#b14b22"/>
+<circle cx="646.71" cy="199.75" r="3" fill="#b14b22"/>
+<circle cx="687.71" cy="190.02" r="3" fill="#b14b22"/>
+<circle cx="724.05" cy="181.40" r="3" fill="#b14b22"/>
+<circle cx="756.69" cy="173.66" r="3" fill="#b14b22"/>
+<circle cx="786.32" cy="166.63" r="3" fill="#b14b22"/>
+<circle cx="813.44" cy="160.20" r="3" fill="#b14b22"/>
+<circle cx="838.44" cy="154.27" r="3" fill="#b14b22"/>
+<circle cx="861.63" cy="148.78" r="3" fill="#b14b22"/>
+<circle cx="883.26" cy="143.65" r="3" fill="#b14b22"/>
+<circle cx="903.52" cy="138.85" r="3" fill="#b14b22"/>
+<path d="M550,514 h30" stroke="#b14b22" stroke-width="3"/>
+<text x="590" y="520">CYK: reglas comprobadas · F</text>
+<polyline points="171.56,270.66 322.29,238.83 424.42,216.81 501.76,199.89 564.03,186.14 616.15,174.53 660.97,164.49 700.29,155.63 735.31,147.70 766.88,140.54 795.61,133.99 821.99,127.97 846.36,122.39 869.00,117.19 890.16,112.33 910.00,107.76" fill="none" stroke="#6248a0" stroke-width="3" stroke-dasharray="8 5"/>
+<circle cx="171.56" cy="270.66" r="3" fill="#6248a0"/>
+<circle cx="322.29" cy="238.83" r="3" fill="#6248a0"/>
+<circle cx="424.42" cy="216.81" r="3" fill="#6248a0"/>
+<circle cx="501.76" cy="199.89" r="3" fill="#6248a0"/>
+<circle cx="564.03" cy="186.14" r="3" fill="#6248a0"/>
+<circle cx="616.15" cy="174.53" r="3" fill="#6248a0"/>
+<circle cx="660.97" cy="164.49" r="3" fill="#6248a0"/>
+<circle cx="700.29" cy="155.63" r="3" fill="#6248a0"/>
+<circle cx="735.31" cy="147.70" r="3" fill="#6248a0"/>
+<circle cx="766.88" cy="140.54" r="3" fill="#6248a0"/>
+<circle cx="795.61" cy="133.99" r="3" fill="#6248a0"/>
+<circle cx="821.99" cy="127.97" r="3" fill="#6248a0"/>
+<circle cx="846.36" cy="122.39" r="3" fill="#6248a0"/>
+<circle cx="869.00" cy="117.19" r="3" fill="#6248a0"/>
+<circle cx="890.16" cy="112.33" r="3" fill="#6248a0"/>
+<circle cx="910.00" cy="107.76" r="3" fill="#6248a0"/>
+<path d="M110,542 h30" stroke="#6248a0" stroke-width="3" stroke-dasharray="8 5"/>
+<text x="150" y="548">PDA: símbolos copiados · R</text>
+<polyline points="171.56,313.33 322.29,276.98 424.42,252.59 501.76,234.18 564.03,219.38 616.15,207.00 660.97,196.36 700.29,187.04 735.31,178.73 766.88,171.24 795.61,164.43 821.99,158.17 846.36,152.40 869.00,147.03 890.16,142.01 910.00,137.31" fill="none" stroke="#24774d" stroke-width="3" stroke-dasharray="8 5"/>
+<circle cx="171.56" cy="313.33" r="3" fill="#24774d"/>
+<circle cx="322.29" cy="276.98" r="3" fill="#24774d"/>
+<circle cx="424.42" cy="252.59" r="3" fill="#24774d"/>
+<circle cx="501.76" cy="234.18" r="3" fill="#24774d"/>
+<circle cx="564.03" cy="219.38" r="3" fill="#24774d"/>
+<circle cx="616.15" cy="207.00" r="3" fill="#24774d"/>
+<circle cx="660.97" cy="196.36" r="3" fill="#24774d"/>
+<circle cx="700.29" cy="187.04" r="3" fill="#24774d"/>
+<circle cx="735.31" cy="178.73" r="3" fill="#24774d"/>
+<circle cx="766.88" cy="171.24" r="3" fill="#24774d"/>
+<circle cx="795.61" cy="164.43" r="3" fill="#24774d"/>
+<circle cx="821.99" cy="158.17" r="3" fill="#24774d"/>
+<circle cx="846.36" cy="152.40" r="3" fill="#24774d"/>
+<circle cx="869.00" cy="147.03" r="3" fill="#24774d"/>
+<circle cx="890.16" cy="142.01" r="3" fill="#24774d"/>
+<circle cx="910.00" cy="137.31" r="3" fill="#24774d"/>
+<path d="M550,542 h30" stroke="#24774d" stroke-width="3" stroke-dasharray="8 5"/>
+<text x="590" y="548">CYK: reglas comprobadas · R</text>
+<text x="100" y="582" font-size="15">F: aceptadas · R: rechazadas con PP incompleto. Las unidades difieren entre métodos.</text>
+</g></svg>
+<figcaption class="caption">Figura 2. Los mismos datos con ambos ejes logarítmicos, incluidos los casos cortos. Las
+pendientes se aproximan a 3 en entradas largas de estas familias, coherentes con términos
+cúbicos; la evidencia finita no demuestra una cota ajustada del PDA.</figcaption></figure>
+<h2 class="major" id="8-discusion-de-desempenos">8. Discusión de desempeños</h2>
+<p><strong>Lo que dice el análisis.</strong> CYK es Θ(n³) para cualquier gramática CNF fija y cualquier entrada:
+su costo es el de llenar la tabla, no el de la frase. El PDA no determinista simulado por búsqueda
+no tiene, en general, una cota polinomial: para una CFG arbitraria la cota superior es exponencial,
+y sin visitados ni poda la recursión izquierda lo haría no terminar. En G, la forma restringida de
+las pilas reduce el espacio de configuraciones a O(n²); por eso el PDA resulta polinomial aquí.
+Esa es una propiedad de G, no del método.</p>
+<p><strong>Lo que muestran los datos.</strong> Medido en «decisiones» (transiciones del PDA frente a comprobaciones
+de reglas de CYK), el PDA crece como n² y CYK como n³: el PDA hace más trabajo con n = 4
+(66 frente a 50) y menos desde n = 7 (196 frente a 280); con n = 49, 8 946 frente a 98 000.
+Medido en el trabajo real de la representación del PDA, cada transición copia y compara una pila de
+longitud O(n), y los símbolos copiados crecen como (22/9)n³, unas 2,9 veces las comprobaciones de
+CYK para n grande. <strong>Las unidades no son equivalentes</strong>: una comprobación de CYK hace hasta dos consultas a
+diccionarios; una transición del PDA construye, hashea y registra una tupla. Ninguna de las dos
+métricas por sí sola decide cuál programa es «más rápido».</p>
+<p><strong>Aceptación y rechazo.</strong> CYK conserva los conteos de celdas, cortes y comprobaciones para frases de igual n
+(filas R, E y D con n = 50: 104 125 comprobaciones; F llega a n = 49). El PDA depende de la entrada: rechaza
+<code>cooks she eats…</code> tras 7 transiciones porque ninguna expansión de S puede empezar con <code>cooks</code>, y
+rechaza palabras fuera de Σ antes de explorar (0 operaciones). En cambio, un rechazo tardío (familia
+R) cuesta prácticamente lo mismo que una aceptación de igual longitud: el polinomio de F evaluado en
+n = 50 da 9 312 transiciones y R_15 usa 9 310. BFS agota la frontera al rechazar, y al aceptar llega
+a la configuración final cuando ya exploró casi todo el espacio alcanzable.</p>
+<p><strong>Recursión izquierda.</strong> VP → VP PP obliga al PDA descendente a usar visitados y poda por longitud
+para terminar; CYK, ascendente, no se ve afectado porque cada celda combina segmentos más cortos.</p>
+<p><strong>Reutilización de subproblemas.</strong> CYK calcula cada segmento una sola vez (programación dinámica).
+El PDA no reutiliza el análisis de un segmento: el mismo NP puede analizarse de nuevo con distintos
+sufijos PP^k en la pila, porque las configuraciones difieren. En las 40 filas se observa <code>repetidas = 0</code>: no hay
+configuraciones idénticas que aprovechar. A la vez, la tabla de CYK es muy dispersa en G
+((7n−1)/3 variables agregadas en F, frente a n(n+1)/2 celdas): CYK paga por subproblemas que
+casi nunca producen algo.</p>
+<p><strong>Memoria.</strong> CYK: Θ(n²) celdas. PDA: O(n²) configuraciones con pilas de longitud O(n), O(n³)
+símbolos guardados como evidencia en G, y exponencial en el peor caso general.</p>
+<p><strong>Límites de esta evidencia.</strong> Los experimentos usan familias concretas con n ≤ 50. Que los
+conteos coincidan con polinomios en 16 puntos respalda las cotas, pero no las demuestra: la
+demostración es el análisis de las secciones 6.1 y 6.2. Los conteos no miden constantes de Python
+ni de la máquina, y no se usaron tiempos de reloj. No puede concluirse que un método sea siempre
+mejor: para G y frases largas el PDA hace menos transiciones, pero CYK ofrece una garantía Θ(n³)
+para cualquier gramática CNF, que la búsqueda en el PDA no tiene.</p>
+<h2 class="major" id="9-validacion">9. Validación</h2>
+<p><code>python -m unittest discover -s tests</code>: <strong>57 pruebas OK</strong>, verificadas en esta entrega; pruebas de gramática, modelo de autómata, PDA, CYK,
+consola e integración. CYK se comprueba con tablas calculadas a mano (<code>he cooks</code>,
+<code>she drinks a beer</code>), conteos cerrados, árboles cuyas hojas son exactamente los tokens y cuyas
+producciones pertenecen a G, derivaciones izquierdas válidas y una gramática CNF distinta (aⁿbⁿ).
+La validación cruzada compara las decisiones del PDA y CYK en todas las cadenas de longitud ≤ 5
+sobre {he, cooks, eats, with, the, cat} (9 331 cadenas) y en 60 frases generadas de G con semilla
+fija junto con versiones perturbadas. Es evidencia acotada a esas longitudes y alfabeto.</p>
+<p>Casos mínimos comprobados desde la consola y las pruebas:</p>
+<table>
+<thead>
+<tr>
+<th>Entrada</th>
+<th>Resultado esperado de ambos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>he cooks</code></td>
+<td>Aceptada; 7 transiciones en la ruta PDA</td>
+</tr>
+<tr>
+<td><code>she drinks a beer</code></td>
+<td>Aceptada; S en T[0,4]</td>
+</tr>
+<tr>
+<td><code>he eats cake</code></td>
+<td>Rechazada; falta determinante</td>
+</tr>
+<tr>
+<td><code>he cooks with</code></td>
+<td>Rechazada; PP incompleto</td>
+</tr>
+<tr>
+<td>Cadena vacía o <code>he</code></td>
+<td>Rechazada</td>
+</tr>
+<tr>
+<td><code>he dances</code>, <code>He cooks</code>, <code>he cooks.</code></td>
+<td>Rechazada; token fuera de Σ</td>
+</tr>
+<tr>
+<td><code>he   cooks</code></td>
+<td>Aceptada tras separar espacios</td>
+</tr>
+</tbody>
+</table>
+<p>Con <code>python main.py "he cooks" --metodo pda --limite 1</code> se obtiene inconclusa y salida 2.
+El límite no se aplica a CYK ni convierte una búsqueda interrumpida en rechazo.
+El benchmark contiene 16 aceptaciones y 24 rechazos, sin límites ni discrepancias.
+Regenerarlo conserva los datos originales; solo cambia CRLF a LF.</p>
+<h2 class="major" id="10-referencias">10. Referencias</h2>
+<ul>
+<li>Hopcroft, J., Motwani, R. y Ullman, J. <em>Introduction to Automata Theory, Languages, and
+  Computation</em>, 3.ª ed. Temas: equivalencia CFG–PDA y prueba de pertenencia mediante CYK.</li>
+<li>Sipser, M. <em>Introduction to the Theory of Computation</em>, 3.ª ed. Temas: autómatas de pila, gramáticas libres de contexto y programación dinámica.</li>
+<li><a href="https://en.wikipedia.org/wiki/CYK_algorithm">CYK algorithm</a>, enlazado en el enunciado.</li>
+<li>Documentación del proyecto: <code>docs/acuerdos.md</code>, <code>docs/pda.md</code>, <code>docs/cyk.md</code>, <code>docs/operaciones.csv</code>.</li>
+<li>Stony Brook University. <a href="https://www3.cs.stonybrook.edu/~cse350/slides/pda2.pdf">Equivalence of Pushdown Automata with Context-Free Grammar</a>.
+  Material universitario consultado para la construcción CFG–PDA.</li>
+<li>Universidad del Valle de Guatemala. <em>Proyecto 2 2026</em>, enunciado y rúbrica del curso CC2019,
+  archivo <code>Proyecto 2 2026.pdf</code> del repositorio.</li>
+</ul></body></html>
